@@ -27,8 +27,7 @@ def clear_screen():
 def system_info():
     uptime_seconds = time.time() - psutil.boot_time()
     info = [
-        f"OS: {platform.system()} {platform.release()}",
-        f"Kernel: {platform.version()}",
+        f"OS/Kernel Version: {platform.system()} {platform.release()}",
         f"Architecture: {platform.machine()}",
         f"Processor: {platform.processor()}",
         f"CPU Cores: {psutil.cpu_count(logical=False)}",
