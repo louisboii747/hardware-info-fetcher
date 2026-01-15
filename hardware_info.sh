@@ -8,8 +8,7 @@ clear_screen() {
 # Function to get system info
 system_info() {
     echo "=== System Information ==="
-    echo "OS: $(uname -s) $(uname -r)"
-    echo "Kernel: $(uname -v)"
+    echo "OS/Kernel Version: $(uname -s) $(uname -r)"
     echo "Architecture: $(uname -m)"
     echo "CPU: $(lscpu | grep 'Model name' | sed 's/Model name: *//')"
     echo "CPU Cores: $(nproc --all)"
