@@ -25,7 +25,7 @@ def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def system_info():
-    uptime_seconds = time.time() - psutil.boot_time()
+    uptime_seconds: float = time.time() - psutil.boot_time()
     info = [
         f"OS/Kernel Version: {platform.system()} {platform.release()}",
         f"Architecture: {platform.machine()}",
@@ -50,6 +50,7 @@ def cpu_mem_bar():
     cpu_bar = "#" * int(cpu / 100 * width)
     mem_bar = "#" * int(mem / 100 * width)
     return f"CPU: [{cpu_bar:<{width}}] {cpu:.1f}%\nMEM: [{mem_bar:<{width}}] {mem:.1f}%"
+    
 
 def network_info():
     net = psutil.net_io_counters(pernic=True)
