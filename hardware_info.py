@@ -34,7 +34,11 @@ def system_info():
         f"Threads: {psutil.cpu_count(logical=True)}",
         f"Memory: {round(psutil.virtual_memory().total / (1024**3), 2)} GB",
         f"Disk: {round(psutil.disk_usage('/').total / (1024**3), 2)} GB",
-        f"Uptime: {uptime_seconds / 3600:.2f} hours"
+        f"Uptime: {uptime_seconds / 3600:.2f} hours",
+        f"Disk Activity: {psutil.disk_io_counters().read_bytes / (1024**2):.2f} MB read, "
+        f"{psutil.disk_io_counters().write_bytes / (1024**2):.2f} MB written"
+
+
     ]
     bat = battery_info()
     if bat:
@@ -42,6 +46,7 @@ def system_info():
     else:
         info.append("Battery: N/A")
     return info
+
 
 def cpu_mem_bar():
     cpu = psutil.cpu_percent(interval=None)
@@ -67,6 +72,7 @@ def top_processes(n=5):
     for name, cpu, mem in procs[:n]:
         lines.append(f"{name[:25]:25} | CPU: {cpu:5.1f}% | MEM: {mem:5.1f}%")
     return lines
+
 
 def main():
     try:
