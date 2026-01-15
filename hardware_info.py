@@ -122,7 +122,6 @@ def drive_info():
 
     return lines
 
-
 ## Print Lines ##
 def main():
     try:
