@@ -570,9 +570,6 @@ def gui_app():
     global current_theme
 
 
-
-
-
     root = tk.Tk()
     root.title("System Monitor")
     root.geometry("800x600")
