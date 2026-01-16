@@ -6,6 +6,90 @@ import os
 import time
 import shutil
 
+MAX_POINTS = 60  # last 60 seconds
+
+cpu_history = []
+mem_history = []
+disk_history = []
+
+
+def update_history():
+    cpu = psutil.cpu_percent(interval=None)
+    mem = psutil.virtual_memory().percent
+    disk = psutil.disk_usage('/').percent
+
+    cpu_history.append(cpu)
+    mem_history.append(mem)
+    disk_history.append(disk)
+
+    if len(cpu_history) > MAX_POINTS:
+        cpu_history.pop(0)
+        mem_history.pop(0)
+
+
+def draw_graph(canvas, data, color, label):
+    canvas.delete("all")
+
+    width = int(canvas["width"])
+    height = int(canvas["height"])
+    padding = 10
+
+    if len(data) < 2:
+        return
+
+    max_val = 100  # percent-based graph
+    step_x = (width - 2 * padding) / (len(data) - 1)
+
+    points = []
+    for i, value in enumerate(data):
+        x = padding + i * step_x
+        y = height - padding - (value / max_val) * (height - 2 * padding)
+        points.extend([x, y])
+
+    canvas.create_line(points, fill=color, width=2, smooth=True)
+    canvas.create_text(
+        5, 5,
+        anchor="nw",
+        text=f"{label}: {data[-1]:.1f}%",
+        fill=color,
+        font=("monospace", 10, "bold")
+    )
+
+
+ALERTS = {
+    "cpu": 90,
+    "memory": 90,
+    "gpu_temp": 80,
+    "battery_low": 20
+}
+
+def check_alerts():
+    alerts = []
+    cpu = psutil.cpu_percent(interval=None)
+    if cpu > ALERTS["cpu"]:
+        alerts.append(f"⚠️ CPU Usage High: {cpu:.1f}%")
+    
+    mem = psutil.virtual_memory().percent
+    if mem > ALERTS["memory"]:
+        alerts.append(f"⚠️ Memory Usage High: {mem:.1f}%")
+    
+    # GPU temp (if available)
+    temps = psutil.sensors_temperatures()
+    if temps:
+        for name, entries in temps.items():
+            for entry in entries:
+                if "gpu" in entry.label.lower() or "nvidia" in name.lower():
+                    if entry.current > ALERTS["gpu_temp"]:
+                        alerts.append(f"⚠️ GPU Temp High: {entry.current} °C")
+    
+    # Battery
+    bat = psutil.sensors_battery()
+    if bat and not bat.power_plugged and bat.percent < ALERTS["battery_low"]:
+        alerts.append(f"⚠️ Battery Low: {bat.percent:.1f}%")
+
+    return alerts
+
+
 
 THEMES = {
     "dark": {
@@ -22,8 +106,15 @@ THEMES = {
         "bg": "#000000",
         "fg": "#00ff00",
         "accent": "#00cc00"
+    },
+    "red": {
+        "bg": "#2e0000",
+        "fg": "#ff4d4d",
+        "accent": "#ff1a1a"
     }
 }
+
+
 
 def apply_theme(root, text, theme_name):
     theme = THEMES[theme_name]
@@ -361,6 +452,11 @@ THEMES = {
         "bg": "#000000",
         "fg": "#00ff00",
         "accent": "#00cc00"
+    },
+    "red": {
+        "bg": "#2e0000",
+        "fg": "#ff4d4d",
+        "accent": "#ff1a1a"
     }
 }
 current_theme = "dark"
@@ -389,13 +485,29 @@ def apply_theme(root, text, theme_name):
 def gui_app():
     global current_theme
 
+    
+
     root = tk.Tk()
     root.title("System Monitor")
     root.geometry("800x600")
 
+
+
     # Text widget
     text = tk.Text(root, font=("monospace", 11), bg="#111", fg="#0f0", insertbackground="white")
     text.pack(fill="both", expand=True)
+
+    # Graph frame
+    graph_frame = tk.Frame(root, bg=THEMES[current_theme]["bg"])
+    graph_frame.pack(fill="x")
+
+    cpu_canvas = tk.Canvas(graph_frame, width=380, height=120, bg="#000000", highlightthickness=0)
+    mem_canvas = tk.Canvas(graph_frame, width=380, height=120, bg="#000000", highlightthickness=0)
+    disk_canvas = tk.Canvas(graph_frame, width=380, height=120, bg="#000000", highlightthickness=0)
+
+    cpu_canvas.pack(side="left", padx=5, pady=5)
+    mem_canvas.pack(side="left", padx=5, pady=5)
+    disk_canvas.pack(side="left", padx=5, pady=5)
 
     # Apply default theme
     apply_theme(root, text, current_theme)
@@ -409,10 +521,23 @@ def gui_app():
 
     root.bind("<F2>", switch_theme)  # Press F2 to cycle themes
 
+
+
+    
     # Update function
     def update():
         scroll = text.yview()  # preserve scroll position
         text.delete("1.0", tk.END)
+        update_history()
+        draw_graph(cpu_canvas, cpu_history, THEMES[current_theme]["accent"], "CPU Usage")
+        draw_graph(mem_canvas, mem_history, THEMES[current_theme]["accent"], "Memory Usage")
+        draw_graph(disk_canvas, disk_history, THEMES[current_theme]["accent"], "Disk Usage")
+        alerts = check_alerts()
+        if alerts:
+            text.insert(tk.END, "\n=== ALERTS ===\n")
+            for alert in alerts:
+                text.insert(tk.END, alert + "\n")
+                text.insert(tk.END, "\n")
 
         for section in SECTIONS:
             lines = section()
