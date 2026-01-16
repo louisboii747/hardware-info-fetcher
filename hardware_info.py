@@ -157,11 +157,11 @@ def battery_info():
         minutes, _ = divmod(remainder, 60)
         time_str = f"{hours}h {minutes}m"
     return f"{percent}% {'(Charging)' if plugged else '(Discharging)'} - Time left: {time_str}"
-    lines.append(f"{percent}% {'(Charging)' if plugged else '(Discharging)'} - Time left: {time_str}")
     return lines
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
+
 
 def system_info():
     lines = ["=== System Information ==="]
@@ -182,13 +182,6 @@ def system_info():
             f"Filesystem: {platform.system()}"
         
         
-        
-        
-        
-        
-        
-        
-        
         ]
 
         io = psutil.disk_io_counters()
@@ -207,8 +200,6 @@ def system_info():
         return [f"System info error: {e}"]
     
 ## END System Info ##
-
-
 
 def swap_memory():
     lines = ["=== Swap Memory ==="]
@@ -231,6 +222,9 @@ def memory_temperature():
                     lines.append(f"{name}: {entry.current} °C")
 
     return lines if len(lines) > 1 else ["===No Memory temperature data found==="]
+
+
+
 
 def gpu_info():
     lines = ["=== GPU Information ==="]
@@ -380,6 +374,77 @@ def cpu_temperature():
 
     return lines
 
+def keyboard_info():
+    lines = ["=== Keyboard Information ==="]
+    try:
+        if platform.system() == "Linux":
+            lsusb_output = os.popen("lsusb | grep -i 'keyboard'").read()
+            keyboards = lsusb_output.strip().split("\n")
+            if not keyboards or keyboards == ['']:
+                return ["===No keyboard information found.==="]
+            for kb in keyboards:
+                lines.append(kb)
+        else:
+            lines.append("===Keyboard info not implemented for this OS.===")
+    except Exception as e:
+        lines.append(f"Keyboard info error: {e}")
+    return lines
+
+
+def mouse_info():
+    lines = ["=== Mouse Information ==="]
+    try:
+        if platform.system() == "Linux":
+            lsusb_output = os.popen("lsusb | grep -i 'mouse'").read()
+            mice = lsusb_output.strip().split("\n")
+            if not mice or mice == ['']:
+                return ["===No mouse information found.==="]
+            for mouse in mice:
+                lines.append(mouse)
+        else:
+            lines.append("===Mouse info not implemented for this OS.===")
+    except Exception as e:
+        lines.append(f"Mouse info error: {e}")
+    return lines
+
+
+def os_info():
+    lines = ["=== Operating System Information ==="]
+    try:
+        if platform.system() == "Linux":
+            distro = ""
+            try:
+                with open("/etc/os-release") as f:
+                    for line in f:
+                        if line.startswith("PRETTY_NAME="):
+                            distro = line.split("=")[1].strip().strip('"')
+                            break
+            except Exception:
+                distro = "Unknown Linux Distro"
+            lines.append(f"Distribution: {distro}")
+        elif platform.system() == "Windows":
+            lines.append(f"Windows Version: {platform.version()}")
+        elif platform.system() == "Darwin":
+            mac_ver = platform.mac_ver()[0]
+            lines.append(f"macOS Version: {mac_ver}")
+        else:
+            lines.append("OS information not implemented for this OS.")
+    except Exception as e:
+        lines.append(f"OS info error: {e}")
+    return lines
+
+
+def wifi_info():
+    lines = ["=== Wi-Fi Information ==="]
+    try:
+        if platform.system() == "Linux":
+            iwconfig_output = os.popen("iwconfig 2>/dev/null | grep 'ESSID'").read()
+            wifis = iwconfig_output.strip().split("\n")
+            if not wifis or wifis == ['']:
+                return ["===No Wi-Fi information found.==="]
+            for wifi in wifis:
+                lines.append(wifi)
+
 
 ## Print Lines ##
 def main():
@@ -425,6 +490,18 @@ def main():
             # Memory Temperature
             for line in memory_temperature():
                 print(line)
+            # OS Info
+            for line in os_info():
+                print(line)
+            # Keyboard Info
+            for line in keyboard_info():
+                print(line)
+            # Mouse Info
+            for line in mouse_info():
+                print(line)
+            # Wi-Fi Info
+            for line in wifi_info():
+                print(line)
             
             print("\nPress Ctrl+C to exit...")
             time.sleep(1)
@@ -446,7 +523,7 @@ THEMES = {
     "light": {
         "bg": "#f5f5f5",
         "fg": "#111111",
-        "accent": "#1976d2"
+        "accent": "#FFFFFF"
     },
     "hacker": {
         "bg": "#000000",
@@ -475,6 +552,10 @@ SECTIONS = [
     gpu_info,
     gpu_temperature,
     memory_temperature,
+    os_info,
+    keyboard_info,
+    mouse_info,
+    wifi_info
 ]
 
 def apply_theme(root, text, theme_name):
