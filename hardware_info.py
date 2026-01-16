@@ -349,8 +349,8 @@ import tkinter as tk
 THEMES = {
     "dark": {
         "bg": "#111111",
-        "fg": "#e6e6e6",
-        "accent": "#4fc3f7"
+        "fg": "#21b0ed",
+        "accent": "#00aeff"
     },
     "light": {
         "bg": "#f5f5f5",
