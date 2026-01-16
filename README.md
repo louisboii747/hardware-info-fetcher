@@ -9,7 +9,7 @@ Themes were also added in a recent update.
 To change the theme, press F2.
 You may need to hold Fn then press F2 to cycle the current themes.
 
-
+More themes will be added soon.
 
 <img width="597" height="508" alt="image" src="https://github.com/user-attachments/assets/bc97f3a9-bb0b-4a5d-9d30-4908aa2849ae" />
 
