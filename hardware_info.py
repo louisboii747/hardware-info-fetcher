@@ -1,8 +1,41 @@
+from logging import root
 import platform
+from pydoc import text
 import psutil
 import os
 import time
 import shutil
+
+
+THEMES = {
+    "dark": {
+        "bg": "#111111",
+        "fg": "#e6e6e6",
+        "accent": "#4fc3f7"
+    },
+    "light": {
+        "bg": "#f5f5f5",
+        "fg": "#111111",
+        "accent": "#1976d2"
+    },
+    "hacker": {
+        "bg": "#000000",
+        "fg": "#00ff00",
+        "accent": "#00cc00"
+    }
+}
+
+def apply_theme(root, text, theme_name):
+    theme = THEMES[theme_name]
+    root.configure(bg=theme["bg"])
+    text.configure(
+        bg=theme["bg"],
+        fg=theme["fg"],
+        insertbackground=theme["fg"]  # caret color
+    )
+
+
+current_theme = "dark"  # default
 
 
 def read_sys(path):
@@ -162,6 +195,8 @@ def top_processes(n=5):
 def motherboard_info():
     if platform.system() == "Linux":
         lines = ["=== Motherboard Information ==="]
+
+
         base_path = "/sys/devices/virtual/dmi/id/"
         info = {
             "Manufacturer": read_sys(base_path + "board_vendor"),
@@ -308,75 +343,88 @@ def main():
 
 import tkinter as tk
 
+import tkinter as tk
+
+# Define your themes
+THEMES = {
+    "dark": {
+        "bg": "#111111",
+        "fg": "#e6e6e6",
+        "accent": "#4fc3f7"
+    },
+    "light": {
+        "bg": "#f5f5f5",
+        "fg": "#111111",
+        "accent": "#1976d2"
+    },
+    "hacker": {
+        "bg": "#000000",
+        "fg": "#00ff00",
+        "accent": "#00cc00"
+    }
+}
+current_theme = "dark"
+
+# List of all section functions
+SECTIONS = [
+    system_info,
+    swap_memory,
+    network_info,
+    top_processes,
+    cpu_mem_bar,
+    drive_info,
+    fan_info,
+    motherboard_info,
+    cpu_temperature,
+    gpu_info,
+    gpu_temperature,
+    memory_temperature,
+]
+
+def apply_theme(root, text, theme_name):
+    theme = THEMES[theme_name]
+    root.configure(bg=theme["bg"])
+    text.configure(bg=theme["bg"], fg=theme["fg"], insertbackground=theme["fg"])
+
 def gui_app():
+    global current_theme
+
     root = tk.Tk()
     root.title("System Monitor")
     root.geometry("800x600")
 
-    text = tk.Text(
-        root,
-        font=("monospace", 11),
-        bg="#111",
-        fg="#0f0",
-        insertbackground="white"
-    )
-
-
-
+    # Text widget
+    text = tk.Text(root, font=("monospace", 11), bg="#111", fg="#0f0", insertbackground="white")
     text.pack(fill="both", expand=True)
 
+    # Apply default theme
+    apply_theme(root, text, current_theme)
+
+    # Function to switch themes
+    def switch_theme(event=None):
+        global current_theme
+        names = list(THEMES.keys())
+        current_theme = names[(names.index(current_theme) + 1) % len(names)]
+        apply_theme(root, text, current_theme)
+
+    root.bind("<F2>", switch_theme)  # Press F2 to cycle themes
+
+    # Update function
     def update():
-        scroll = text.yview()
-        
+        scroll = text.yview()  # preserve scroll position
         text.delete("1.0", tk.END)
 
-        for line in system_info():
-            text.insert(tk.END, line + "\n")
+        for section in SECTIONS:
+            lines = section()
+            for line in lines:
+                text.insert(tk.END, line + "\n")
+            text.insert(tk.END, "\n")  # blank line between sections
 
-        for line in swap_memory():
-            text.insert(tk.END, line + "\n")
-
-        for line in network_info():
-            text.insert(tk.END, line + "\n")
-
-        text.insert(tk.END, "\n")
-
-        for line in top_processes():
-            text.insert(tk.END, line + "\n")
-
-        text.insert(tk.END, "\n")
-
-        for line in cpu_mem_bar():
-            text.insert(tk.END, line + "\n")
-
-        for line in drive_info():
-            text.insert(tk.END, line + "\n")
-        
-        for line in fan_info():
-            text.insert(tk.END, line + "\n")
-        
-        for line in motherboard_info():
-            text.insert(tk.END, line + "\n")
-        
-        for line in cpu_temperature():
-            text.insert(tk.END, line + "\n")
-
-        for line in gpu_info():
-            text.insert(tk.END, line + "\n")
-        
-        for line in gpu_temperature():
-            text.insert(tk.END, line + "\n")
-        
-        for line in memory_temperature():
-            text.insert(tk.END, line + "\n")
-
-        text.yview_moveto(scroll[0])
-
+        text.yview_moveto(scroll[0])  # restore scroll
         root.after(1000, update)
 
     update()
     root.mainloop()
-
 
 if __name__ == "__main__":
     gui_app()
