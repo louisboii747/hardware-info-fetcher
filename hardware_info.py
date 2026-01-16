@@ -444,6 +444,11 @@ def wifi_info():
                 return ["===No Wi-Fi information found.==="]
             for wifi in wifis:
                 lines.append(wifi)
+        else:
+            lines.append("===Wi-Fi info not implemented for this OS.===")
+    except Exception as e:
+        lines.append(f"Wi-Fi info error: {e}")
+    return lines
 
 
 ## Print Lines ##
