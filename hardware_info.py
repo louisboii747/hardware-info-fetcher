@@ -93,7 +93,7 @@ def top_processes(n=5):
 
 
 def motherboard_info():
-    if platform.system() == "Linux":
+    if platform.system() == "Windows":
         lines = ["=== Motherboard Information ==="]
         base_path = "/sys/devices/virtual/dmi/id/"
         info = {
