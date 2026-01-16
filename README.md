@@ -3,6 +3,6 @@ A Python script to fetch display system hardware info like CPU, RAM, disk space,
 
 Features live readouts for RAM and CPU usage.
 
-Access the /sys/class folders on the Root partion in Linux, reponsible for housing hardware properties, pulling data such as battery capacity and charging status from the files.
+Accesses the /sys/class folders on the Root partion in Linux, reponsible for housing hardware properties, pulling data such as battery capacity and charging status from the files.
 
 <img width="597" height="508" alt="image" src="https://github.com/user-attachments/assets/bc97f3a9-bb0b-4a5d-9d30-4908aa2849ae" />
