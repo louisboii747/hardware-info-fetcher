@@ -4,6 +4,7 @@ import os
 import time
 import shutil
 
+
 def read_sys(path):
     try:
         with open(path) as f:
@@ -78,6 +79,7 @@ def network_info():
     return lines
 
 
+
 def top_processes(n=5):
     procs = [(p.info["name"], p.info["cpu_percent"], p.info["memory_percent"])
              for p in psutil.process_iter(["name", "cpu_percent", "memory_percent"])]
@@ -91,7 +93,7 @@ def top_processes(n=5):
 
 
 def motherboard_info():
-    if platform.system() == "Windows":
+    if platform.system() == "Linux":
         lines = ["=== Motherboard Information ==="]
         base_path = "/sys/devices/virtual/dmi/id/"
         info = {
@@ -102,6 +104,25 @@ def motherboard_info():
         }
         return [f"{key}: {value if value else 'N/A'}" for key, value in info.items()]
     return ["Motherboard info not available on this OS."]
+
+def fan_info():
+    lines = ["=== Fan Sensors ==="]
+    hwmon_base = "/sys/class/hwmon"
+
+    if not os.path.exists(hwmon_base):
+        return ["Fan sensors not available"]
+
+    for hw in os.listdir(hwmon_base):
+        hw_path = os.path.join(hwmon_base, hw)
+        name = read_sys(os.path.join(hw_path, "name")) or hw
+
+        for file in os.listdir(hw_path):
+            if file.startswith("fan") and file.endswith("_input"):
+                rpm = read_sys(os.path.join(hw_path, file))
+                if rpm and rpm.isdigit():
+                    lines.append(f"{name} {file}: {rpm} RPM")
+
+    return lines if len(lines) > 1 else ["No fans detected"]
 
 
 
@@ -145,6 +166,9 @@ def main():
             # CPU and Memory bar
             for line in [cpu_mem_bar()]:
                 print(line)
+            # Fan Info
+            for line in fan_info():
+                print(line)
             # Motherboard Info
             for line in motherboard_info():
                 print(line)
@@ -163,11 +187,14 @@ def gui_app():
 
     text = tk.Text(
         root,
-        font=("monospace", 10),
+        font=("monospace", 11),
         bg="#111",
         fg="#0f0",
         insertbackground="white"
     )
+
+
+
     text.pack(fill="both", expand=True)
 
     def update():
@@ -196,6 +223,8 @@ def gui_app():
         for line in drive_info():
             text.insert(tk.END, line + "\n")
         
+        for line in fan_info():
+            text.insert(tk.END, line + "\n")
         
         for line in motherboard_info():
             text.insert(tk.END, line + "\n")
