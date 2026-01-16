@@ -6,6 +6,10 @@ Features live readouts for RAM and CPU usage.
 Accesses the /sys/class folders on the Root partion in Linux, reponsible for housing hardware properties, pulling data such as battery capacity and charging status from the files.
 
 Themes were also added in a recent update.
+To change the theme, press F2.
+You may need to hold Fn then press F2 to cycle the current themes.
+
+
 
 <img width="597" height="508" alt="image" src="https://github.com/user-attachments/assets/bc97f3a9-bb0b-4a5d-9d30-4908aa2849ae" />
 
