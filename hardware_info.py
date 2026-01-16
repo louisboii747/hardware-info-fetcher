@@ -136,7 +136,7 @@ def read_sys(path):
     except Exception:
         return None
 
-
+## System Info ##
 
 def battery_info():
     lines = ["=== Battery Information ==="]
