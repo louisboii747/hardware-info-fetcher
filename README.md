@@ -15,3 +15,4 @@ More themes will be added soon.
 
 ![Themes](https://github.com/user-attachments/assets/45a383eb-7ae0-4ae0-95a5-2bd6b6aea4a6)
 
+Made with ❤️ by [Louis Hinchliffe]
