@@ -306,7 +306,7 @@ def fan_info():
     for hw in os.listdir(hwmon_base):
         hw_path = os.path.join(hwmon_base, hw)
         name = read_sys(os.path.join(hw_path, "name")) or hw
-
+        
         for file in os.listdir(hw_path):
             if file.startswith("fan") and file.endswith("_input"):
                 rpm = read_sys(os.path.join(hw_path, file))
