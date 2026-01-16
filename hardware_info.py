@@ -12,10 +12,7 @@ def read_sys(path):
     except Exception:
         return None
 
-def swap_memory():
-    lines = ["=== Swap Memory ==="]
-    swap = psutil.swap_memory()
-    return f"Swap: {round(swap.total / (1024**3), 2)} GB, Used: {round(swap.used / (1024**3), 2)} GB ({swap.percent}%)"
+
 
 def battery_info():
     lines = ["=== Battery Information ==="]
@@ -49,15 +46,25 @@ def system_info():
         info = [
             f"OS/Kernel Version: {platform.system()} {platform.release()}",
             f"Architecture: {platform.machine()}",
+            f"CPU: {platform.processor()}",
+            f"CPU Frequency: {psutil.cpu_freq().current:.2f} MHz",
             f"CPU Cores: {psutil.cpu_count(logical=False)}",
             f"Threads: {psutil.cpu_count(logical=True)}",
             f"Memory: {round(psutil.virtual_memory().total / (1024**3), 2)} GB",
             f"Disk: {round(psutil.disk_usage('/').total / (1024**3), 2)} GB",
             f"Uptime: {uptime_seconds / 3600:.2f} hours",
             f"User: {os.getlogin()}",
-            
-    
-            
+            f"Display Size: {shutil.get_terminal_size().columns}x{shutil.get_terminal_size().lines}",
+            f"Filesystem: {platform.system()}"
+        
+        
+        
+        
+        
+        
+        
+        
+        
         ]
 
         io = psutil.disk_io_counters()
@@ -76,6 +83,14 @@ def system_info():
         return [f"System info error: {e}"]
     
 ## END System Info ##
+
+
+
+def swap_memory():
+    lines = ["=== Swap Memory ==="]
+    swap = psutil.swap_memory()
+    lines.append(f"Swap: {round(swap.total / (1024**3), 2)} GB, Used: {round(swap.used / (1024**3), 2)} GB ({swap.percent}%)")
+    return lines
 
 def memory_temperature():
     lines = ["=== Memory Temperature ==="]
@@ -115,7 +130,7 @@ def cpu_mem_bar():
     cpu = psutil.cpu_percent(interval=None)
     lines = ["=== CPU and Memory Usage ==="]
     mem = psutil.virtual_memory().percent
-    width = shutil.get_terminal_size().columns - 20
+    width = 50
     cpu_bar = "#" * int(cpu / 100 * width)
     mem_bar = "#" * int(mem / 100 * width)
     lines.append(f"CPU: [{cpu_bar:<{width}}] {cpu:.1f}%")
@@ -318,7 +333,8 @@ def gui_app():
         for line in system_info():
             text.insert(tk.END, line + "\n")
 
-        text.insert(tk.END, swap_memory() + "\n\n")
+        for line in swap_memory():
+            text.insert(tk.END, line + "\n")
 
         for line in network_info():
             text.insert(tk.END, line + "\n")
