@@ -485,13 +485,13 @@ def apply_theme(root, text, theme_name):
 def gui_app():
     global current_theme
 
-    
+
+
+
 
     root = tk.Tk()
     root.title("System Monitor")
     root.geometry("800x600")
-
-
 
     # Text widget
     text = tk.Text(root, font=("monospace", 11), bg="#111", fg="#0f0", insertbackground="white")
@@ -504,7 +504,7 @@ def gui_app():
     cpu_canvas = tk.Canvas(graph_frame, width=380, height=120, bg="#000000", highlightthickness=0)
     mem_canvas = tk.Canvas(graph_frame, width=380, height=120, bg="#000000", highlightthickness=0)
     disk_canvas = tk.Canvas(graph_frame, width=380, height=120, bg="#000000", highlightthickness=0)
-
+    cpu_temperature_canvas = tk.Canvas(graph_frame, width=380, height=120, bg="#000000", highlightthickness=0)
     cpu_canvas.pack(side="left", padx=5, pady=5)
     mem_canvas.pack(side="left", padx=5, pady=5)
     disk_canvas.pack(side="left", padx=5, pady=5)
