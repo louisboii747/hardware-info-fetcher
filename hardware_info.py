@@ -18,15 +18,26 @@ def swap_memory():
     return f"Swap: {round(swap.total / (1024**3), 2)} GB, Used: {round(swap.used / (1024**3), 2)} GB ({swap.percent}%)"
 
 def battery_info():
-    base = "/sys/class/power_supply"
-    if not os.path.exists(base):
+    lines = ["=== Battery Information ==="]
+    if not hasattr(psutil, "sensors_battery"):
         return None
-    for item in os.listdir(base):
-        if item.startswith("BAT"):
-            cap = read_sys(f"{base}/{item}/capacity")
-            stat = read_sys(f"{base}/{item}/status")
-            return f"{cap}% ({stat})"
-        
+    bat = psutil.sensors_battery()
+    if bat is None:
+        return None
+    percent = bat.percent
+    plugged = bat.power_plugged
+    secsleft = bat.secsleft
+    if secsleft == psutil.POWER_TIME_UNLIMITED:
+        time_str = "N/A"
+    elif secsleft == psutil.POWER_TIME_UNKNOWN:
+        time_str = "Unknown"
+    else:
+        hours, remainder = divmod(secsleft, 3600)
+        minutes, _ = divmod(remainder, 60)
+        time_str = f"{hours}h {minutes}m"
+    return f"{percent}% {'(Charging)' if plugged else '(Discharging)'} - Time left: {time_str}"
+    lines.append(f"{percent}% {'(Charging)' if plugged else '(Discharging)'} - Time left: {time_str}")
+    return lines
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -44,6 +55,9 @@ def system_info():
             f"Disk: {round(psutil.disk_usage('/').total / (1024**3), 2)} GB",
             f"Uptime: {uptime_seconds / 3600:.2f} hours",
             f"User: {os.getlogin()}",
+            
+    
+            
         ]
 
         io = psutil.disk_io_counters()
@@ -60,15 +74,53 @@ def system_info():
 
     except Exception as e:
         return [f"System info error: {e}"]
+    
+## END System Info ##
+
+def memory_temperature():
+    lines = ["=== Memory Temperature ==="]
+    temps = psutil.sensors_temperatures()
+    if not temps:
+        return ["===Memory temperature sensors not available"]
+
+    for name, entries in temps.items():
+        for entry in entries:
+            if "memory" in entry.label.lower() or "ram" in name.lower():
+                if entry.label:
+                    lines.append(f"{entry.label}: {entry.current} °C")
+                else:
+                    lines.append(f"{name}: {entry.current} °C")
+
+    return lines if len(lines) > 1 else ["===No Memory temperature data found==="]
+
+def gpu_info():
+    lines = ["=== GPU Information ==="]
+    try:
+        if platform.system() == "Linux":
+            lspci_output = os.popen("lspci | grep -i 'vga\\|3d\\|2d'").read()
+            gpus = lspci_output.strip().split("\n")
+            if not gpus or gpus == ['']:
+                return ["No GPU information found."]
+            for gpu in gpus:
+                lines.append(gpu)
+        else:
+            lines.append("GPU info not implemented for this OS.")
+    except Exception as e:
+        lines.append(f"GPU info error: {e}")
+    return lines
+
+
 
 def cpu_mem_bar():
-    lines = ["=== CPU and Memory Usage ==="]
     cpu = psutil.cpu_percent(interval=None)
+    lines = ["=== CPU and Memory Usage ==="]
     mem = psutil.virtual_memory().percent
     width = shutil.get_terminal_size().columns - 20
     cpu_bar = "#" * int(cpu / 100 * width)
     mem_bar = "#" * int(mem / 100 * width)
-    return f"CPU: [{cpu_bar:<{width}}] {cpu:.1f}%\nMEM: [{mem_bar:<{width}}] {mem:.1f}%"
+    lines.append(f"CPU: [{cpu_bar:<{width}}] {cpu:.1f}%")
+    lines.append(f"MEM: [{mem_bar:<{width}}] {mem:.1f}%")
+    return lines
 
 
 def network_info():
@@ -93,7 +145,7 @@ def top_processes(n=5):
 
 
 def motherboard_info():
-    if platform.system() == "Windows":
+    if platform.system() == "Linux":
         lines = ["=== Motherboard Information ==="]
         base_path = "/sys/devices/virtual/dmi/id/"
         info = {
@@ -101,9 +153,15 @@ def motherboard_info():
             "Product Name": read_sys(base_path + "board_name"),
             "Version": read_sys(base_path + "board_version"),
             "Serial Number": read_sys(base_path + "board_serial"),
+        
         }
-        return [f"{key}: {value if value else 'N/A'}" for key, value in info.items()]
-    return ["Motherboard info not available on this OS."]
+    for key , value in info.items():
+        lines.append(f"{key}: {value if value else 'N/A'}")
+
+    return lines
+    
+
+
 
 def fan_info():
     lines = ["=== Fan Sensors ==="]
@@ -122,7 +180,11 @@ def fan_info():
                 if rpm and rpm.isdigit():
                     lines.append(f"{name} {file}: {rpm} RPM")
 
-    return lines if len(lines) > 1 else ["No fans detected"]
+    return lines if len(lines) > 1 else ["==No fans detected==="]
+
+
+
+
 
 
 
@@ -142,6 +204,41 @@ def drive_info():
         )
 
     return lines
+
+
+def gpu_temperature():
+    lines = ["=== GPU Temperature ==="]
+    temps = psutil.sensors_temperatures()
+    if not temps:
+        return ["GPU temperature sensors not available"]
+
+    for name, entries in temps.items():
+        for entry in entries:
+            if "gpu" in entry.label.lower() or "nvidia" in name.lower() or "amdgpu" in name.lower():
+                if entry.label:
+                    lines.append(f"{entry.label}: {entry.current} °C")
+                else:
+                    lines.append(f"{name}: {entry.current} °C")
+
+    return lines if len(lines) > 1 else ["===No GPU temperature data found==="]
+
+
+
+def cpu_temperature():
+    lines = ["=== CPU Temperature ==="]
+    temps = psutil.sensors_temperatures()
+    if not temps:
+        return ["CPU temperature sensors not available"]
+
+    for name, entries in temps.items():
+        for entry in entries:
+            if entry.label:
+                lines.append(f"{entry.label}: {entry.current} °C")
+            else:
+                lines.append(f"{name}: {entry.current} °C")
+
+    return lines
+
 
 ## Print Lines ##
 def main():
@@ -166,12 +263,28 @@ def main():
             # CPU and Memory bar
             for line in [cpu_mem_bar()]:
                 print(line)
+            # CPU Temperature
+            for line in cpu_temperature():
+                print(line)
             # Fan Info
             for line in fan_info():
+                print(line)
+            # GPU Info
+            for line in gpu_info():
                 print(line)
             # Motherboard Info
             for line in motherboard_info():
                 print(line)
+            # GPU Temperature
+            for line in gpu_temperature():
+                print(line)
+            # Battery Info
+            for line in [battery_info()]:
+                print(f"Battery: {line}")
+            # Memory Temperature
+            for line in memory_temperature():
+                print(line)
+            
             print("\nPress Ctrl+C to exit...")
             time.sleep(1)
     
@@ -217,7 +330,7 @@ def gui_app():
 
         text.insert(tk.END, "\n")
 
-        for line in cpu_mem_bar().split("\n"):
+        for line in cpu_mem_bar():
             text.insert(tk.END, line + "\n")
 
         for line in drive_info():
@@ -227,6 +340,18 @@ def gui_app():
             text.insert(tk.END, line + "\n")
         
         for line in motherboard_info():
+            text.insert(tk.END, line + "\n")
+        
+        for line in cpu_temperature():
+            text.insert(tk.END, line + "\n")
+
+        for line in gpu_info():
+            text.insert(tk.END, line + "\n")
+        
+        for line in gpu_temperature():
+            text.insert(tk.END, line + "\n")
+        
+        for line in memory_temperature():
             text.insert(tk.END, line + "\n")
 
         text.yview_moveto(scroll[0])
