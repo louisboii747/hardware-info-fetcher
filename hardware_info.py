@@ -356,6 +356,22 @@ def gpu_temperature():
     return lines if len(lines) > 1 else ["===No GPU temperature data found==="]
 
 
+def memory_temperature():
+    lines = ["=== Memory Temperature ==="]
+    temps = psutil.sensors_temperatures()
+    if not temps:
+        return ["Memory temperature sensors not available"]
+
+    for name, entries in temps.items():
+        for entry in entries:
+            if "memory" in entry.label.lower() or "ram" in name.lower():
+                if entry.label:
+                    lines.append(f"{entry.label}: {entry.current} °C")
+                else:
+                    lines.append(f"{name}: {entry.current} °C")
+
+    return lines if len(lines) > 1 else ["===No Memory temperature data found==="]
+
 
 def cpu_temperature():
     lines = ["=== CPU Temperature ==="]
@@ -474,6 +490,9 @@ def main():
                 print(line)
             # CPU Temperature
             for line in cpu_temperature():
+                print(line)
+            # Memory Temperature
+            for line in memory_temperature():
                 print(line)
             # Fan Info
             for line in fan_info():
