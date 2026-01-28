@@ -577,7 +577,7 @@ SECTIONS = [
     os_info,
     keyboard_info,
     mouse_info,
-    wifi_info
+    wifi_info,
 ]
 
 def apply_theme(root, text, theme_name):
