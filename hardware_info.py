@@ -178,6 +178,7 @@ def system_info():
             f"User: {os.getlogin()}",
             f"Display Size: {shutil.get_terminal_size().columns}x{shutil.get_terminal_size().lines}",
             f"Filesystem: {platform.system()}"
+            f"Resizable Bar: {'Supported' if os.path.exists('/sys/bus/pci/devices/0000:00:01.0/resizable_bar') else 'Not Supported'}"
         
         
         ]
@@ -205,6 +206,9 @@ def swap_memory():
     lines.append(f"Swap: {round(swap.total / (1024**3), 2)} GB, Used: {round(swap.used / (1024**3), 2)} GB ({swap.percent}%)")
     return lines
 
+
+
+
 def memory_temperature():
     lines = ["=== Memory Temperature ==="]
     temps = psutil.sensors_temperatures()
@@ -222,24 +226,89 @@ def memory_temperature():
     return lines if len(lines) > 1 else ["===No Memory temperature data found==="]
 
 
-
-
 def gpu_info():
     lines = ["=== GPU Information ==="]
+
+    try:
+        if platform.system() != "Linux":
+            return ["GPU info not implemented for this OS."]
+
+        # 1. Find ONLY dedicated AMD / NVIDIA GPUs
+        cmd = (
+            "lspci | grep -Ei "
+            "'(NVIDIA Corporation|Advanced Micro Devices, Inc.)' | "
+            "grep -E '(VGA|3D)' | "
+            "grep -vi 'APU'"
+        )
+        gpus = [l for l in os.popen(cmd).read().splitlines() if l]
+
+        if not gpus:
+            return ["No dedicated AMD or NVIDIA GPU found."]
+
+        for gpu in gpus:
+            lines.append(gpu)
+
+            # Extract PCI bus ID (e.g. 01:00.0)
+            bus_id = gpu.split()[0]
+
+            # 2. PCIe lane width (current + max)
+            pcie_info = os.popen(f"lspci -s {bus_id} -vv").read()
+            lane_match = re.search(
+                r"LnkSta:\s+Speed\s+[^,]+,\s+Width\s+x(\d+).*?\n.*?LnkCap:\s+Speed\s+[^,]+,\s+Width\s+x(\d+)",
+                pcie_info,
+                re.S
+            )
+
+            if lane_match:
+                current, maximum = lane_match.groups()
+                lines.append(f"  PCIe: x{current} (max x{maximum})")
+            else:
+                lines.append("  PCIe: Unknown")
+
+            # 3. VRAM detection
+            if "NVIDIA" in gpu:
+                vram = os.popen(
+                    "nvidia-smi --query-gpu=memory.total "
+                    "--format=csv,noheader,nounits"
+                ).read().strip()
+                if vram:
+                    lines.append(f"  VRAM: {vram} MB")
+                else:
+                    lines.append("  VRAM: Unknown")
+
+            elif "Advanced Micro Devices" in gpu:
+                vram = os.popen(
+                    "grep -i 'VRAM' /var/log/Xorg.0.log 2>/dev/null | head -n1"
+                ).read().strip()
+                if vram:
+                    lines.append(f"  VRAM: {vram}")
+                else:
+                    lines.append("  VRAM: Unknown (AMD userspace tools vary)")
+
+        return lines
+
+    except Exception as e:
+        return [f"GPU info error: {e}"]
+
+
+
+
+
+def intel_gpu_info():
+    lines = ["=== Intel GPU Information ==="]
     try:
         if platform.system() == "Linux":
-            lspci_output = os.popen("lspci | grep -i 'vga\\|3d\\|2d'").read()
-            gpus = lspci_output.strip().split("\n")
+            intel_gpu_output = os.popen("lspci | grep -i 'intel' | grep -i 'vga\\|3d\\|2d'").read()
+            gpus = intel_gpu_output.strip().split("\n")
             if not gpus or gpus == ['']:
-                return ["No GPU information found."]
+                return ["No Intel GPU information found."]
             for gpu in gpus:
                 lines.append(gpu)
         else:
-            lines.append("GPU info not implemented for this OS.")
+            lines.append("Intel GPU info not implemented for this OS.")
     except Exception as e:
-        lines.append(f"GPU info error: {e}")
+        lines.append(f"Intel GPU info error: {e}")
     return lines
-
 
 
 def cpu_mem_bar():
@@ -531,6 +600,10 @@ def main():
                 print(line)
             print("\nPress Ctrl+C to exit...")
             time.sleep(1)
+            # Intel GPU Info
+            for line in intel_gpu_info():
+                print(line)
+
     
     except KeyboardInterrupt:
         print("\nExiting...")
@@ -582,7 +655,9 @@ SECTIONS = [
     keyboard_info,
     mouse_info,
     wifi_info,
-    partition_info
+    partition_info,
+    intel_gpu_info,
+
 ]
 
 def apply_theme(root, text, theme_name):
