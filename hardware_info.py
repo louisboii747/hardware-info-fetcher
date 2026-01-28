@@ -278,8 +278,6 @@ def top_processes(n=5):
 def motherboard_info():
     if platform.system() == "Linux":
         lines = ["=== Motherboard Information ==="]
-
-
         base_path = "/sys/devices/virtual/dmi/id/"
         info = {
             "Manufacturer": read_sys(base_path + "board_vendor"),
