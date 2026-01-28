@@ -316,7 +316,11 @@ def fan_info():
 
 
 
-
+def partition_info():
+    lines = ["=== Partition Information ==="]
+    for part in psutil.disk_partitions(all=False):
+        lines.append(f"{part.device} mounted on {part.mountpoint} - Type: {part.fstype}")
+    return lines
 
 
 def drive_info():
@@ -522,7 +526,9 @@ def main():
             # Wi-Fi Info
             for line in wifi_info():
                 print(line)
-            
+            # Partition Info
+            for line in partition_info():
+                print(line)
             print("\nPress Ctrl+C to exit...")
             time.sleep(1)
     
@@ -576,6 +582,7 @@ SECTIONS = [
     keyboard_info,
     mouse_info,
     wifi_info,
+    partition_info
 ]
 
 def apply_theme(root, text, theme_name):
