@@ -69,7 +69,69 @@ def check_alerts():
     cpu = psutil.cpu_percent(interval=None)
     if cpu > ALERTS["cpu"]:
         alerts.append(f"⚠️ CPU Usage High: {cpu:.1f}%")
-    
+def gpu_info():
+    lines = ["=== GPU Information ==="]
+
+    try:
+        if platform.system() != "Linux":
+            return ["GPU info not implemented for this OS."]
+
+        # 1. Find ONLY dedicated AMD / NVIDIA GPUs
+        cmd = (
+            "lspci | grep -Ei "
+            "'(NVIDIA Corporation|Advanced Micro Devices, Inc.)' | "
+            "grep -E '(VGA|3D)' | "
+            "grep -vi 'APU'"
+        )
+        gpus = [l for l in os.popen(cmd).read().splitlines() if l]
+
+        if not gpus:
+            return ["No dedicated AMD or NVIDIA GPU found."]
+
+        for gpu in gpus:
+            lines.append(gpu)
+
+            # Extract PCI bus ID (e.g. 01:00.0)
+            bus_id = gpu.split()[0]
+
+            # 2. PCIe lane width (current + max)
+            pcie_info = os.popen(f"lspci -s {bus_id} -vv").read()
+            lane_match = re.search(
+                r"LnkSta:\s+Speed\s+[^,]+,\s+Width\s+x(\d+).*?\n.*?LnkCap:\s+Speed\s+[^,]+,\s+Width\s+x(\d+)",
+                pcie_info,
+                re.S
+            )
+
+            if lane_match:
+                current, maximum = lane_match.groups()
+                lines.append(f"  PCIe: x{current} (max x{maximum})")
+            else:
+                lines.append("  PCIe: Unknown")
+
+            # 3. VRAM detection
+            if "NVIDIA" in gpu:
+                vram = os.popen(
+                    "nvidia-smi --query-gpu=memory.total "
+                    "--format=csv,noheader,nounits"
+                ).read().strip()
+                if vram:
+                    lines.append(f"  VRAM: {vram} MB")
+                else:
+                    lines.append("  VRAM: Unknown")
+
+            elif "Advanced Micro Devices" in gpu:
+                vram = os.popen(
+                    "grep -i 'VRAM' /var/log/Xorg.0.log 2>/dev/null | head -n1"
+                ).read().strip()
+                if vram:
+                    lines.append(f"  VRAM: {vram}")
+                else:
+                    lines.append("  VRAM: Unknown (AMD userspace tools vary)")
+
+        return lines
+
+    except Exception as e:
+        return [f"GPU info error: {e}"] 
     mem = psutil.virtual_memory().percent
     if mem > ALERTS["memory"]:
         alerts.append(f"⚠️ Memory Usage High: {mem:.1f}%")
