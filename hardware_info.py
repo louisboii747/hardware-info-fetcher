@@ -5,6 +5,7 @@ import psutil
 import os
 import time
 import shutil
+import re
 
 MAX_POINTS = 60  # last 60 seconds
 
