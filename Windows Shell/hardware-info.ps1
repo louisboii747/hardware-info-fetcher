@@ -81,5 +81,5 @@ while ($true) {
         Write-Host "⚠️ BATTERY LOW" -ForegroundColor Red
     }
 
-    Start-Sleep 1
+    Start-Sleep 5
 }
