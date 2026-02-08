@@ -2,7 +2,6 @@ Clear-Host
 
 $CPU_ALERT = 90
 $MEM_ALERT = 90
-$GPU_TEMP_ALERT = 80
 $BATTERY_ALERT = 20
 
 function HR { Write-Host "------------------------------------------------------------" }
@@ -10,6 +9,8 @@ function HR { Write-Host "------------------------------------------------------
 function CPU_Usage {
     (Get-Counter '\Processor(_Total)\% Processor Time').CounterSamples.CookedValue
 }
+
+
 
 function Memory_Usage {
     $os = Get-CimInstance Win32_OperatingSystem
@@ -48,6 +49,11 @@ function Top_Processes {
         }
 }
 
+function RAM_Usage {
+    $os = Get-CimInstance Win32_OperatingSystem
+    [math]::Round((($os.TotalVisibleMemorySize - $os.FreePhysicalMemory) / $os.TotalVisibleMemorySize) * 100, 1)
+}
+
 while ($true) {
     Clear-Host
 
@@ -64,6 +70,7 @@ while ($true) {
     Write-Host ("Memory Usage: {0}%" -f $mem)
     Write-Host ("Disk Usage (C:): {0}%" -f $disk)
     Write-Host ("Battery: {0}" -f $bat)
+    Write-Host ("RAM Usage: {0}%" -f (RAM_Usage))
 
     HR
     Write-Host "=== GPU ==="
@@ -74,6 +81,9 @@ while ($true) {
     Top_Processes
 
     HR
+    Write-Host "=== RAM USAGE ==="
+    RAM_Usage
+
 
     if ($cpu -gt $CPU_ALERT) { Write-Host "⚠️ CPU USAGE HIGH" -ForegroundColor Red }
     if ($mem -gt $MEM_ALERT) { Write-Host "⚠️ MEMORY USAGE HIGH" -ForegroundColor Red }
@@ -81,5 +91,5 @@ while ($true) {
         Write-Host "⚠️ BATTERY LOW" -ForegroundColor Red
     }
 
-    Start-Sleep 5
+    Start-Sleep 2.5
 }
