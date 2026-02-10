@@ -508,19 +508,27 @@ def memory_temperature():
 
 
 def cpu_temperature():
-    lines = ["=== CPU Temperature ==="]
+    lines = ["=== CPU Core Temperatures ==="]
     temps = psutil.sensors_temperatures()
+
     if not temps:
         return ["CPU temperature sensors not available"]
 
     for name, entries in temps.items():
+        # coretemp is the common CPU core sensor on Linux/Windows
+        if "core" not in name.lower():
+            continue
+
         for entry in entries:
-            if entry.label:
+            # Most core temps have labels like "Core 0", "Core 1", etc.
+            if entry.label and "core" in entry.label.lower():
                 lines.append(f"{entry.label}: {entry.current} °C")
-            else:
-                lines.append(f"{name}: {entry.current} °C")
+
+    if len(lines) == 1:
+        return ["CPU core temperature sensors not found"]
 
     return lines
+
 
 def keyboard_info():
     lines = ["=== Keyboard Information ==="]
