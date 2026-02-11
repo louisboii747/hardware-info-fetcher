@@ -516,12 +516,10 @@ def cpu_temperature():
         return ["CPU temperature sensors not available"]
 
     for name, entries in temps.items():
-        # coretemp is the common CPU core sensor on Linux/Windows
         if "core" not in name.lower():
             continue
 
         for entry in entries:
-            # Most core temps have labels like "Core 0", "Core 1", etc.
             if entry.label and "core" in entry.label.lower():
                 lines.append(f"{entry.label}: {entry.current} °C")
 
