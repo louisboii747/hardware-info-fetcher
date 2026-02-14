@@ -1,6 +1,5 @@
 from logging import root
 import platform
-from pydoc import text
 import psutil
 import os
 import time
@@ -225,6 +224,113 @@ def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
+## START SYSTEM SUMMARY ##
+
+# ---------- Summary Function ----------
+def system_summary():
+    lines = ["=== SYSTEM SUMMARY ==="]
+
+    cpu_name = platform.processor()
+    total_ram = round(psutil.virtual_memory().total / (1024**3), 1)
+    disk_total = round(psutil.disk_usage('/').total / (1024**3), 1)
+
+    # GPU name (simplified)
+    gpu_name = "Unknown"
+    if platform.system() == "Linux":
+        output = os.popen(
+            "lspci | grep -Ei '(VGA|3D)' | grep -Ei '(NVIDIA|AMD)'"
+        ).read().strip()
+        if output:
+            gpu_name = output.split(":")[-1].strip()
+
+    lines.append(f"CPU  : {cpu_name}")
+    lines.append(f"GPU  : {gpu_name}")
+    lines.append(f"RAM  : {total_ram} GB")
+    lines.append(f"Disk : {disk_total} GB\n")
+
+    cpu = psutil.cpu_percent(interval=None)
+    mem = psutil.virtual_memory().percent
+    disk = psutil.disk_usage('/').percent
+
+    lines.append(f"CPU Usage   : {cpu:.1f}%")
+    lines.append(f"Memory Usage: {mem:.1f}%")
+    lines.append(f"Disk Usage  : {disk:.1f}%")
+
+    return lines
+
+# ---------- Full Sections Placeholder ----------
+
+SECTIONS = [
+    system_summary
+]
+
+# ---------- GUI App ----------
+def gui_app():
+    global current_theme
+    current_theme = "dark"
+    THEMES = {
+        "dark": {"bg": "#111111", "fg": "#21b0ed", "accent": "#00aeff"},
+        "light": {"bg": "#f5f5f5", "fg": "#111111", "accent": "#FFFFFF"},
+        "hacker": {"bg": "#000000", "fg": "#00ff00", "accent": "#00cc00"},
+        "red": {"bg": "#2e0000", "fg": "#ff4d4d", "accent": "#ff1a1a"}
+    }
+
+    root = tk.Tk()
+    root.title("System Monitor")
+    root.geometry("800x600")
+
+    summary_mode = True  # Start in summary mode
+
+    # Text widget
+    text = tk.Text(root, font=("monospace", 11), bg=THEMES[current_theme]["bg"],
+                   fg=THEMES[current_theme]["fg"], insertbackground=THEMES[current_theme]["fg"])
+    text.pack(fill="both", expand=True)
+
+    # Toggle Button
+    def toggle_view():
+        nonlocal summary_mode
+        summary_mode = not summary_mode
+        toggle_btn.config(text="Show Full Stats" if summary_mode else "Show Summary")
+
+    toggle_btn = tk.Button(root, text="Show Full Stats", command=toggle_view)
+    toggle_btn.pack()
+
+    def apply_theme(root, text, theme_name):
+        theme = THEMES[theme_name]
+        root.configure(bg=theme["bg"])
+        text.configure(bg=theme["bg"], fg=theme["fg"], insertbackground=theme["fg"])
+
+    apply_theme(root, text, current_theme)
+
+    # ---------- Update Function ----------
+
+def update():
+    text.config(state="normal")  # Enable editing temporarily
+
+    scroll = text.yview()  # Remember scroll position
+
+    active_sections = [system_summary] if summary_mode else SECTIONS
+
+    # Build the full output as a single string
+    full_text = ""
+    for section in active_sections:
+        lines = section()
+        full_text += "\n".join(lines) + "\n\n"
+
+    # Replace the widget content
+    text.delete("1.0", tk.END)
+    text.insert("1.0", full_text)
+
+    text.yview_moveto(scroll[0])  # Restore scroll position
+    text.config(state="disabled")  # Disable editing to prevent flicker
+
+    root.after(1000, update)  # Schedule next update
+
+
+## END System Summary ##
+
+
+
 def system_info():
     lines = ["=== System Information ==="]
     try:
@@ -261,6 +367,7 @@ def system_info():
     except Exception as e:
         return [f"System info error: {e}"]
     
+
 ## END System Info ##
 
 def swap_memory():
@@ -678,10 +785,6 @@ def main():
     except KeyboardInterrupt:
         print("\nExiting...")
 
-import tkinter as tk
-
-import tkinter as tk
-
 # Define your themes
 THEMES = {
     "dark": {
@@ -735,71 +838,122 @@ def apply_theme(root, text, theme_name):
     root.configure(bg=theme["bg"])
     text.configure(bg=theme["bg"], fg=theme["fg"], insertbackground=theme["fg"])
 
+
+# ---------- Summary Function ----------
+def system_summary():
+    lines = ["=== SYSTEM SUMMARY ==="]
+
+    cpu_name = platform.processor()
+    total_ram = round(psutil.virtual_memory().total / (1024**3), 1)
+    disk_total = round(psutil.disk_usage('/').total / (1024**3), 1)
+
+    # GPU name (simplified)
+    gpu_name = "Unknown"
+    if platform.system() == "Linux":
+        output = os.popen(
+            "lspci | grep -Ei '(VGA|3D)' | grep -Ei '(NVIDIA|AMD)'"
+        ).read().strip()
+        if output:
+            gpu_name = output.split(":")[-1].strip()
+
+    lines.append(f"CPU  : {cpu_name}")
+    lines.append(f"GPU  : {gpu_name}")
+    lines.append(f"RAM  : {total_ram} GB")
+    lines.append(f"Disk : {disk_total} GB\n")
+
+    cpu = psutil.cpu_percent(interval=None)
+    mem = psutil.virtual_memory().percent
+    disk = psutil.disk_usage('/').percent
+
+    lines.append(f"CPU Usage   : {cpu:.1f}%")
+    lines.append(f"Memory Usage: {mem:.1f}%")
+    lines.append(f"Disk Usage  : {disk:.1f}%")
+
+    return lines
+
+# ---------- Full Sections Placeholder ----------
+# Replace this with your actual SECTIONS list from your app
+SECTIONS = [ 
+    system_info,
+    swap_memory,
+    network_info,
+    top_processes,
+    cpu_mem_bar,
+    drive_info,
+    fan_info,
+    motherboard_info,
+    cpu_temperature,
+    gpu_info,
+    gpu_temperature,
+    memory_temperature,
+    os_info,
+    keyboard_info,
+    mouse_info,
+    wifi_info,
+    partition_info,
+    intel_gpu_info
+]
+
+# ---------- GUI App ---------- #
+import tkinter as tk
+
+
 def gui_app():
     global current_theme
-
+    current_theme = "dark"
+    THEMES = {
+        "dark": {"bg": "#111111", "fg": "#21b0ed", "accent": "#00aeff"},
+        "light": {"bg": "#f5f5f5", "fg": "#111111", "accent": "#FFFFFF"},
+        "hacker": {"bg": "#000000", "fg": "#00ff00", "accent": "#00cc00"},
+        "red": {"bg": "#2e0000", "fg": "#ff4d4d", "accent": "#ff1a1a"}
+    }
 
     root = tk.Tk()
     root.title("System Monitor")
     root.geometry("800x600")
 
+    summary_mode = True  # Start in summary mode
+
     # Text widget
-    text = tk.Text(root, font=("monospace", 11), bg="#111", fg="#0f0", insertbackground="white")
+    text = tk.Text(root, font=("monospace", 11), bg=THEMES[current_theme]["bg"],
+                   fg=THEMES[current_theme]["fg"], insertbackground=THEMES[current_theme]["fg"])
     text.pack(fill="both", expand=True)
 
-    # Graph frame
-    graph_frame = tk.Frame(root, bg=THEMES[current_theme]["bg"])
-    graph_frame.pack(fill="x")
+    # Toggle Button
+    def toggle_view():
+        nonlocal summary_mode
+        summary_mode = not summary_mode
+        toggle_btn.config(text="Show Full Stats" if summary_mode else "Show Summary")
 
-    cpu_canvas = tk.Canvas(graph_frame, width=380, height=120, bg="#000000", highlightthickness=0)
-    mem_canvas = tk.Canvas(graph_frame, width=380, height=120, bg="#000000", highlightthickness=0)
-    disk_canvas = tk.Canvas(graph_frame, width=380, height=120, bg="#000000", highlightthickness=0)
-    cpu_temperature_canvas = tk.Canvas(graph_frame, width=380, height=120, bg="#000000", highlightthickness=0)
-    cpu_canvas.pack(side="left", padx=5, pady=5)
-    mem_canvas.pack(side="left", padx=5, pady=5)
-    disk_canvas.pack(side="left", padx=5, pady=5)
+    toggle_btn = tk.Button(root, text="Show Full Stats", command=toggle_view)
+    toggle_btn.pack()
 
-    # Apply default theme
+    def apply_theme(root, text, theme_name):
+        theme = THEMES[theme_name]
+        root.configure(bg=theme["bg"])
+        text.configure(bg=theme["bg"], fg=theme["fg"], insertbackground=theme["fg"])
+
     apply_theme(root, text, current_theme)
 
-    # Function to switch themes
-    def switch_theme(event=None):
-        global current_theme
-        names = list(THEMES.keys())
-        current_theme = names[(names.index(current_theme) + 1) % len(names)]
-        apply_theme(root, text, current_theme)
-
-    root.bind("<F2>", switch_theme)  # Press F2 to cycle themes
-
-
-
-    
-    # Update function
+    # ---------- Update Function ----------
     def update():
-        scroll = text.yview()  # preserve scroll position
+        scroll = text.yview()
         text.delete("1.0", tk.END)
-        update_history()
-        draw_graph(cpu_canvas, cpu_history, THEMES[current_theme]["accent"], "CPU Usage")
-        draw_graph(mem_canvas, mem_history, THEMES[current_theme]["accent"], "Memory Usage")
-        draw_graph(disk_canvas, disk_history, THEMES[current_theme]["accent"], "Disk Usage")
-        alerts = check_alerts()
-        if alerts:
-            text.insert(tk.END, "\n=== ALERTS ===\n")
-            for alert in alerts:
-                text.insert(tk.END, alert + "\n")
-                text.insert(tk.END, "\n")
 
-        for section in SECTIONS:
+        active_sections = [system_summary] if summary_mode else SECTIONS  # Toggle logic
+
+        for section in active_sections:
             lines = section()
             for line in lines:
                 text.insert(tk.END, line + "\n")
-            text.insert(tk.END, "\n")  # blank line between sections
+            text.insert(tk.END, "\n")
 
-        text.yview_moveto(scroll[0])  # restore scroll
+        text.yview_moveto(scroll[0])
         root.after(1000, update)
 
     update()
     root.mainloop()
+
 
 if __name__ == "__main__":
     gui_app()
