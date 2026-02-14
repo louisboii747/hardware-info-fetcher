@@ -1,18 +1,47 @@
 
 ![Hardware Info Fetcher](https://github.com/user-attachments/assets/b8d534c6-57cb-4434-891f-3ba8ccd198e3)
 
-# Hardware Info Fetcher
-A Python script to fetch display system hardware info like CPU, RAM, disk space, and more. Perfect for Linux systems.
+HardwareMon
 
-Features live readouts for RAM and CPU usage.
+HardwareMon is a lightweight system monitoring tool designed to provide a detailed overview of your computer’s hardware and performance metrics. It can display CPU, memory, disk, GPU, battery, network, and peripheral information in real time. The project includes two main implementations: a Python version for Linux systems and a PowerShell version for Windows.
 
-Accesses the /sys/class folders on the Root partion in Linux, reponsible for housing hardware properties, pulling data such as battery capacity and charging status from the files.
+Features
 
-Themes were also added in a recent update.
-To change the theme, press F2.
-You may need to hold Fn then press F2 to cycle the current themes.
+HardwareMon gathers and presents information such as CPU usage, memory usage, disk activity, top running processes, GPU specifications and temperatures, battery status, and peripheral details. On Linux, the Python version uses the psutil library and native system commands to extract detailed system information. On Windows, the PowerShell version leverages CIM/WMI queries to report similar statistics.
 
-More themes will be added soon.
+The Linux version also includes a GUI mode built with Tkinter, offering a modern and configurable interface with light, dark, and hacker-style themes. Graphs for CPU, memory, and disk usage are updated in real time, providing a quick visual snapshot of system performance.
+
+Installation
+Linux (Python version)
+
+Ensure Python 3 and the psutil library are installed.
+
+Clone the repository or download the Python script.
+
+Run the script from a terminal:
+
+python3 hardware_mon.py
+
+Windows (PowerShell version)
+
+Open PowerShell.
+
+Run the script directly or use the provided .exe if available:
+
+.\hardware-info.ps1
+
+
+The Windows .exe was generated from the PowerShell script but is not maintained as actively as the source script. It may lack the latest bug fixes or features and is provided primarily for convenience.
+
+Notes
+
+The Windows version relies on CIM/WMI queries and may have limitations on certain hardware or older operating systems. The Linux Python version provides more extensive monitoring capabilities, including GPU lane and VRAM information for NVIDIA and AMD cards, as well as real-time graphical representations.
+
+While the project can run as a standalone script or executable, it is recommended to use the scripts directly to ensure maximum compatibility and access to the latest updates.
+
+Contribution
+
+Contributions and suggestions are welcome. Please feel free to fork the repository and submit pull requests or report issues on the project’s issue tracker.
 
 <img width="597" height="508" alt="image" src="https://github.com/user-attachments/assets/bc97f3a9-bb0b-4a5d-9d30-4908aa2849ae" />
 
