@@ -7,7 +7,7 @@ HardwareMon is a lightweight system monitoring tool designed to provide a detail
 
 HardwareMon gathers and presents information such as CPU usage, memory usage, disk activity, top running processes, GPU specifications and temperatures, battery status, and peripheral details. On Linux, the Python version uses the psutil library and native system commands to extract detailed system information. On Windows, the PowerShell version leverages CIM/WMI queries to report similar statistics.
 
-The Linux version also includes a GUI mode built with Tkinter, offering a modern and configurable interface with light, dark, and hacker-style themes. Graphs for CPU, memory, and disk usage are updated in real time, providing a quick visual snapshot of system performance.
+The Linux version also includes a GUI mode built with Tkinter, offering a modern and configurable interface with light, dark, and hacker-style themes. To cycle themes, press F2. Graphs for CPU, memory, and disk usage are updated in real time, providing a quick visual snapshot of system performance.
 
 ## Installation ##
 Linux (Python version)
