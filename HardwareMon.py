@@ -6,7 +6,6 @@ import time
 import shutil
 import re
 
-
 MAX_POINTS = 60  # last 60 seconds
 
 cpu_history = []
@@ -69,6 +68,29 @@ def check_alerts():
     cpu = psutil.cpu_percent(interval=None)
     if cpu > ALERTS["cpu"]:
         alerts.append(f"⚠️ CPU Usage High: {cpu:.1f}%")
+
+
+    # GPU temp (if available)
+    temps = psutil.sensors_temperatures()
+    if temps:
+        for name, entries in temps.items():
+            for entry in entries:
+                if "gpu" in entry.label.lower() or "nvidia" in name.lower():
+                    if entry.current > ALERTS["gpu_temp"]:
+                        alerts.append(f"⚠️ GPU Temp High: {entry.current} °C")
+    
+    # Battery
+    bat = psutil.sensors_battery()
+    if bat and not bat.power_plugged and bat.percent < ALERTS["battery_low"]:
+        alerts.append(f"⚠️ Battery Low: {bat.percent:.1f}%")
+
+    mem = psutil.virtual_memory().percent
+    if mem > ALERTS["memory"]:
+        alerts.append(f"⚠️ Memory Usage High: {mem:.1f}%")
+
+
+    return alerts
+
 
 def gpu_info():
     lines = ["=== GPU Information ==="]
@@ -133,25 +155,6 @@ def gpu_info():
 
     except Exception as e:
         return [f"GPU info error: {e}"] 
-    mem = psutil.virtual_memory().percent
-    if mem > ALERTS["memory"]:
-        alerts.append(f"⚠️ Memory Usage High: {mem:.1f}%")
-    
-    # GPU temp (if available)
-    temps = psutil.sensors_temperatures()
-    if temps:
-        for name, entries in temps.items():
-            for entry in entries:
-                if "gpu" in entry.label.lower() or "nvidia" in name.lower():
-                    if entry.current > ALERTS["gpu_temp"]:
-                        alerts.append(f"⚠️ GPU Temp High: {entry.current} °C")
-    
-    # Battery
-    bat = psutil.sensors_battery()
-    if bat and not bat.power_plugged and bat.percent < ALERTS["battery_low"]:
-        alerts.append(f"⚠️ Battery Low: {bat.percent:.1f}%")
-
-    return alerts
 
 
 
