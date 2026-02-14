@@ -1,3 +1,6 @@
+
+![Hardware Info Fetcher](https://github.com/user-attachments/assets/b8d534c6-57cb-4434-891f-3ba8ccd198e3)
+
 # Hardware Info Fetcher
 A Python script to fetch display system hardware info like CPU, RAM, disk space, and more. Perfect for Linux systems.
 
