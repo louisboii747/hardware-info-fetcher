@@ -6,6 +6,7 @@ import time
 import shutil
 import re
 
+
 MAX_POINTS = 60  # last 60 seconds
 
 cpu_history = []
@@ -302,29 +303,6 @@ def gui_app():
 
     apply_theme(root, text, current_theme)
 
-    # ---------- Update Function ----------
-
-def update():
-    text.config(state="normal")  # Enable editing temporarily
-
-    scroll = text.yview()  # Remember scroll position
-
-    active_sections = [system_summary] if summary_mode else SECTIONS
-
-    # Build the full output as a single string
-    full_text = ""
-    for section in active_sections:
-        lines = section()
-        full_text += "\n".join(lines) + "\n\n"
-
-    # Replace the widget content
-    text.delete("1.0", tk.END)
-    text.insert("1.0", full_text)
-
-    text.yview_moveto(scroll[0])  # Restore scroll position
-    text.config(state="disabled")  # Disable editing to prevent flicker
-
-    root.after(1000, update)  # Schedule next update
 
 
 ## END System Summary ##
@@ -895,8 +873,8 @@ SECTIONS = [
 ]
 
 # ---------- GUI App ---------- #
-import tkinter as tk
 
+import tkinter as tk
 
 def gui_app():
     global current_theme
@@ -935,7 +913,7 @@ def gui_app():
 
     apply_theme(root, text, current_theme)
 
-    # ---------- Update Function ----------
+    # ---------- Update Function ---------- #
     def update():
         scroll = text.yview()
         text.delete("1.0", tk.END)
