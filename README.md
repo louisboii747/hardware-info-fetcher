@@ -1,6 +1,3 @@
-
-![Hardware Info Fetcher](https://github.com/user-attachments/assets/b8d534c6-57cb-4434-891f-3ba8ccd198e3)
-
 HardwareMon
 
 HardwareMon is a lightweight system monitoring tool designed to provide a detailed overview of your computer’s hardware and performance metrics. It can display CPU, memory, disk, GPU, battery, network, and peripheral information in real time. The project includes two main implementations: a Python version for Linux systems and a PowerShell version for Windows.
