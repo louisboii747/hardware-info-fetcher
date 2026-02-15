@@ -8,7 +8,7 @@ import re
 import requests
 import psutil
 
-VERSION = "1.0.0"
+VERSION = "2.0.0"
 
 MAX_POINTS = 60  # last 60 seconds
 
