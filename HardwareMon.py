@@ -5,13 +5,34 @@ import os
 import time
 import shutil
 import re
+import requests
 
+VERSION = "1.0.0"
 
 MAX_POINTS = 60  # last 60 seconds
 
 cpu_history = []
 mem_history = []
 disk_history = []
+
+
+import requests
+
+def check_for_updates():
+    repo = "yourusername/HardwareMon"  # change this
+    url = f"https://api.github.com/repos/{repo}/releases/latest"
+
+    try:
+        response = requests.get(url, timeout=5)
+        if response.status_code == 200:
+            latest_version = response.json()["tag_name"].lstrip("v")
+            if latest_version != VERSION:
+                print(f"Update available: v{latest_version}")
+                print(f"You are running: v{VERSION}")
+        else:
+            print("Could not check for updates.")
+    except Exception:
+        pass  # fail silently so it doesn't break monitoring
 
 
 def update_history():
@@ -934,4 +955,5 @@ def gui_app():
 
 
 if __name__ == "__main__":
+    check_for_updates()
     gui_app()
