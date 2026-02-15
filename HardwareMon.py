@@ -7,7 +7,7 @@ import re
 import requests
 import psutil
 
-VERSION = "0.0.1"
+VERSION = "1.0.0"
 
 MAX_POINTS = 60  # last 60 seconds
 
@@ -27,12 +27,11 @@ def check_for_updates():
         if response.status_code == 200:
             latest_version = response.json()["tag_name"].lstrip("v")
             if latest_version != VERSION:
-                print(f"Update available: v{latest_version}")
-                print(f"You are running: v{VERSION}")
-        else:
-            print("Could not check for updates.")
+                return f"Update available: v{latest_version}"
+        return None  # No update
     except Exception:
-        pass  # fail silently so it doesn't break monitoring
+        return None  # Fail silently
+
 
 
 def update_history():
@@ -951,7 +950,22 @@ def gui_app():
         scroll = text.yview()
         text.delete("1.0", tk.END)
 
-        active_sections = [system_summary] if summary_mode else SECTIONS  # Toggle logic
+        # Alerts
+        alerts = check_alerts()
+
+        # Updates
+        update_msg = check_for_updates()
+
+        # Set version_label text
+        if alerts:
+            version_label.config(text=" | ".join(alerts))
+        elif update_msg:
+            version_label.config(text=f"HardwareMon v{VERSION} → {update_msg}")
+        else:
+            version_label.config(text=f"HardwareMon v{VERSION}")
+
+        # Decide which sections to show
+        active_sections = [system_summary] if summary_mode else SECTIONS
 
         for section in active_sections:
             lines = section()
@@ -959,12 +973,14 @@ def gui_app():
                 text.insert(tk.END, line + "\n")
             text.insert(tk.END, "\n")
 
+        # Restore scroll
         text.yview_moveto(scroll[0])
-        root.after(1000, update)
+
+        # Repeat every 60 seconds
+        root.after(60000, update)
 
     update()
     root.mainloop()
-
 
 if __name__ == "__main__":
     check_for_updates()
