@@ -7,6 +7,8 @@ import shutil
 import re
 import requests
 import psutil
+import tkinter.messagebox as messagebox
+
 
 VERSION = "2.0.0"
 
@@ -32,26 +34,6 @@ def check_for_updates():
         return None  # No update
     except Exception:
         return None  # Fail silently
-    
-
-# Global cache for update messages
-_last_update_check = 0
-_update_msg_cache = None
-UPDATE_CHECK_INTERVAL = 600  # seconds (10 minutes)
-
-def check_for_updates_cached():
-    global _last_update_check, _update_msg_cache
-    now = time.time()
-
-    # Only check GitHub if enough time has passed
-    if now - _last_update_check > UPDATE_CHECK_INTERVAL:
-        _last_update_check = now
-        _update_msg_cache = check_for_updates()  # your existing function
-
-    return _update_msg_cache
-
-
-
 
 def update_history():
     cpu = psutil.cpu_percent(interval=None)
@@ -894,53 +876,57 @@ SECTIONS = [
     intel_gpu_info
 ]
 
+import time
+
+# Global cache for update messages
+_last_update_check = 0
+_update_msg_cache = None
+UPDATE_CHECK_INTERVAL = 600  # seconds (10 minutes)
+
+def check_for_updates_cached():
+    global _last_update_check, _update_msg_cache
+    now = time.time()
+
+    # Only check GitHub if enough time has passed
+    if now - _last_update_check > UPDATE_CHECK_INTERVAL:
+        _last_update_check = now
+        _update_msg_cache = check_for_updates()  # your existing function
+
+    return _update_msg_cache
+
+
 # ---------- GUI App ---------- #
 import tkinter as tk
-
 def gui_app():
-    
     root = tk.Tk()
     root.title("HardwareMon")
     root.geometry("800x600")
 
+    # ---- Define variables first ----
     summary_mode = tk.BooleanVar(value=True)
 
-    # Version / Alerts label
-    version_label = tk.Label(
-        root,
-        text=f"HardwareMon v{VERSION}",
-        font=("monospace", 12, "bold"),
-        bg=THEMES[current_theme]["bg"],
-        fg=THEMES[current_theme]["fg"]
-    )
+    # ---- Create widgets ----
+    version_label = tk.Label(root, text=f"HardwareMon v{VERSION}",
+                             font=("monospace", 12, "bold"))
     version_label.pack(anchor="ne", padx=10, pady=5)
 
-    # Text widget
-    text = tk.Text(
-        root,
-        font=("monospace", 11),
-        bg=THEMES[current_theme]["bg"],
-        fg=THEMES[current_theme]["fg"],
-        insertbackground=THEMES[current_theme]["fg"]
-    )
+    text = tk.Text(root, font=("monospace", 11))
     text.pack(fill="both", expand=True, padx=5, pady=5)
 
-    # Frame for toggle button and graphs
-    main_frame = tk.Frame(root, bg=THEMES[current_theme]["bg"])
+    main_frame = tk.Frame(root)
     main_frame.pack(pady=5, fill="x")
 
     toggle_btn = tk.Button(main_frame, text="Show Full Stats")
     toggle_btn.pack(pady=2)
 
-    cpu_canvas = tk.Canvas(main_frame, width=780, height=100, bg=THEMES[current_theme]["bg"])
+    cpu_canvas = tk.Canvas(main_frame, width=780, height=100)
     cpu_canvas.pack(pady=2)
-    mem_canvas = tk.Canvas(main_frame, width=780, height=100, bg=THEMES[current_theme]["bg"])
+    mem_canvas = tk.Canvas(main_frame, width=780, height=100)
     mem_canvas.pack(pady=2)
-    disk_canvas = tk.Canvas(main_frame, width=780, height=100, bg=THEMES[current_theme]["bg"])
+    disk_canvas = tk.Canvas(main_frame, width=780, height=100)
     disk_canvas.pack(pady=2)
 
-    # ---- Functions ---- #
-
+    # ---- Now define functions ----
     def apply_theme_gui(theme_name):
         theme = THEMES[theme_name]
         root.configure(bg=theme["bg"])
@@ -955,9 +941,8 @@ def gui_app():
     def refresh_text():
         scroll = text.yview()
         text.delete("1.0", tk.END)
-
         alerts = check_alerts()
-        update_msg = check_for_updates_cached()  # new throttled version
+        update_msg = check_for_updates_cached()
 
         if alerts:
             version_label.config(text=" | ".join(alerts))
@@ -995,11 +980,9 @@ def gui_app():
         apply_theme_gui(current_theme)
         refresh_text()
 
-    # Bind keys
     root.bind("<F2>", lambda e: toggle_view())
     root.bind("<F3>", switch_theme)
 
-    # Initial display
     apply_theme_gui(current_theme)
     refresh_text()
 
@@ -1009,6 +992,8 @@ def gui_app():
 
     update_loop()
     root.mainloop()
+
+
 
 
 ## -- END GUI APP -- ##
