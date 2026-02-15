@@ -43,8 +43,4 @@ While the project can run as a standalone script or executable, it is recommende
 
 Contributions and suggestions are welcome. Please feel free to fork the repository and submit pull requests or report issues on the project’s issue tracker.
 
-<img width="597" height="508" alt="image" src="https://github.com/user-attachments/assets/bc97f3a9-bb0b-4a5d-9d30-4908aa2849ae" />
-
-![Themes](https://github.com/user-attachments/assets/45a383eb-7ae0-4ae0-95a5-2bd6b6aea4a6)
-
 Made with ❤️ by Louis
