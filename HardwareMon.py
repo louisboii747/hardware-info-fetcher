@@ -1,9 +1,11 @@
+from email.mime import text
 from logging import root
 import platform
 import os
 import time
 import shutil
 import re
+from turtle import update
 import requests
 import psutil
 
@@ -89,6 +91,25 @@ def check_alerts():
     cpu = psutil.cpu_percent(interval=None)
     if cpu > ALERTS["cpu"]:
         alerts.append(f"⚠️ CPU Usage High: {cpu:.1f}%")
+    
+    mem = psutil.virtual_memory().percent
+    if mem > ALERTS["memory"]:
+        alerts.append(f"⚠️ Memory Usage High: {mem:.1f}%")
+    
+    temps = psutil.sensors_temperatures()
+    if temps:
+        for name, entries in temps.items():
+            for entry in entries:
+                if "gpu" in entry.label.lower() or "nvidia" in name.lower():
+                    if entry.current > ALERTS["gpu_temp"]:
+                        alerts.append(f"⚠️ GPU Temp High: {entry.current} °C")
+    
+    bat = psutil.sensors_battery()
+    if bat and not bat.power_plugged and bat.percent < ALERTS["battery_low"]:
+        alerts.append(f"⚠️ Battery Low: {bat.percent:.1f}%")
+    
+    return alerts
+
 
 def gpu_info():
     lines = ["=== GPU Information ==="]
@@ -284,45 +305,6 @@ def system_summary():
 SECTIONS = [
     system_summary
 ]
-
-# ---------- GUI App ----------
-def gui_app():
-    global current_theme
-    current_theme = "dark"
-    THEMES = {
-        "dark": {"bg": "#111111", "fg": "#21b0ed", "accent": "#00aeff"},
-        "light": {"bg": "#f5f5f5", "fg": "#111111", "accent": "#FFFFFF"},
-        "hacker": {"bg": "#000000", "fg": "#00ff00", "accent": "#00cc00"},
-        "red": {"bg": "#2e0000", "fg": "#ff4d4d", "accent": "#ff1a1a"}
-    }
-
-    root = tk.Tk()
-    root.title("System Monitor")
-    root.geometry("800x600")
-
-    summary_mode = True  # Start in summary mode
-
-    # Text widget
-    text = tk.Text(root, font=("monospace", 11), bg=THEMES[current_theme]["bg"],
-                   fg=THEMES[current_theme]["fg"], insertbackground=THEMES[current_theme]["fg"])
-    text.pack(fill="both", expand=True)
-
-    # Toggle Button
-    def toggle_view():
-        nonlocal summary_mode
-        summary_mode = not summary_mode
-        toggle_btn.config(text="Show Full Stats" if summary_mode else "Show Summary")
-
-    toggle_btn = tk.Button(root, text="Show Full Stats", command=toggle_view)
-    toggle_btn.pack()
-
-    def apply_theme(root, text, theme_name):
-        theme = THEMES[theme_name]
-        root.configure(bg=theme["bg"])
-        text.configure(bg=theme["bg"], fg=theme["fg"], insertbackground=theme["fg"])
-
-    apply_theme(root, text, current_theme)
-
 
 
 ## END System Summary ##
@@ -896,67 +878,66 @@ SECTIONS = [
 
 import tkinter as tk
 
-def gui_app():
-    global current_theme
-    current_theme = "dark"
-    THEMES = {
-        "dark": {"bg": "#111111", "fg": "#21b0ed", "accent": "#00aeff"},
-        "light": {"bg": "#f5f5f5", "fg": "#111111", "accent": "#FFFFFF"},
-        "hacker": {"bg": "#000000", "fg": "#00ff00", "accent": "#00cc00"},
-        "red": {"bg": "#2e0000", "fg": "#ff4d4d", "accent": "#ff1a1a"}
-    }
+current_theme = "dark"
+THEMES = {
+    "dark": {"bg": "#111111", "fg": "#21b0ed", "accent": "#00aeff"},
+    "light": {"bg": "#f5f5f5", "fg": "#111111", "accent": "#FFFFFF"},
+    "hacker": {"bg": "#000000", "fg": "#00ff00", "accent": "#00cc00"},
+    "red": {"bg": "#2e0000", "fg": "#ff4d4d", "accent": "#ff1a1a"}
+}
 
+def gui_app():
     root = tk.Tk()
     root.title("System Monitor")
     root.geometry("800x600")
 
+    summary_mode = tk.BooleanVar(value=True)  # Proper binding for summary mode
 
-    # --- Version Label ---
+    # Version / Alerts label
     version_label = tk.Label(
         root,
-        text=f"HardwareMon v{VERSION}",  # <- this is your version number
+        text=f"HardwareMon v{VERSION}",
         font=("monospace", 12, "bold"),
         bg=THEMES[current_theme]["bg"],
         fg=THEMES[current_theme]["fg"]
     )
     version_label.pack(anchor="ne", padx=10, pady=5)
-    # --- End Version Label ---
-
-    summary_mode = True  # Start in summary mode
 
     # Text widget
-    text = tk.Text(root, font=("monospace", 11), bg=THEMES[current_theme]["bg"],
-                   fg=THEMES[current_theme]["fg"], insertbackground=THEMES[current_theme]["fg"])
+    text = tk.Text(root, font=("monospace", 11),
+                   bg=THEMES[current_theme]["bg"],
+                   fg=THEMES[current_theme]["fg"],
+                   insertbackground=THEMES[current_theme]["fg"])
     text.pack(fill="both", expand=True)
 
     # Toggle Button
     def toggle_view():
-        nonlocal summary_mode
-        summary_mode = not summary_mode
-        toggle_btn.config(text="Show Full Stats" if summary_mode else "Show Summary")
+        summary_mode.set(not summary_mode.get())  # flip the mode
+        toggle_btn.config(text="Show Full Stats" if summary_mode.get() else "Show Summary")
+        refresh_text()  # refresh immediately
 
     toggle_btn = tk.Button(root, text="Show Full Stats", command=toggle_view)
     toggle_btn.pack()
 
-    def apply_theme(root, text, theme_name):
+    # Apply theme function
+    def apply_theme(theme_name):
         theme = THEMES[theme_name]
         root.configure(bg=theme["bg"])
         text.configure(bg=theme["bg"], fg=theme["fg"], insertbackground=theme["fg"])
+        version_label.configure(bg=theme["bg"], fg=theme["fg"])
+        toggle_btn.configure(bg=theme["bg"], fg=theme["fg"])
 
-    apply_theme(root, text, current_theme)
+    apply_theme(current_theme)
 
-    # ---------- Update Function ---------- #
-    def update():
+    # Refresh text based on summary mode
+    def refresh_text():
         scroll = text.yview()
         text.delete("1.0", tk.END)
 
         # Alerts
         alerts = check_alerts()
-
-        # Updates
         update_msg = check_for_updates()
 
-        # Set version_label text
         if alerts:
             version_label.config(text=" | ".join(alerts))
         elif update_msg:
@@ -964,23 +945,25 @@ def gui_app():
         else:
             version_label.config(text=f"HardwareMon v{VERSION}")
 
-        # Decide which sections to show
-        active_sections = [system_summary] if summary_mode else SECTIONS
-
+        active_sections = [system_summary] if summary_mode.get() else SECTIONS
         for section in active_sections:
             lines = section()
             for line in lines:
                 text.insert(tk.END, line + "\n")
             text.insert(tk.END, "\n")
 
-        # Restore scroll
         text.yview_moveto(scroll[0])
 
-        # Repeat every 60 seconds
-        root.after(60000, update)
+    # Auto-refresh every 60 seconds
+    def update_loop():
+        refresh_text()
+        root.after(60000, update_loop)
 
-    update()
+    update_loop()
     root.mainloop()
+
+
+## -- END GUI APP -- ##
 
 if __name__ == "__main__":
     check_for_updates()
