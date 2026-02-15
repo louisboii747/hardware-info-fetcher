@@ -777,7 +777,7 @@ THEMES = {
     "light": {
         "bg": "#f5f5f5",
         "fg": "#111111",
-        "accent": "#FFFFFF"
+        "accent": "#000000"
     },
     "hacker": {
         "bg": "#000000",
