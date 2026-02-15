@@ -1,0 +1,9 @@
+requests
+psutil
+re
+shutil
+time
+platform
+text
+root
+os
