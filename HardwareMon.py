@@ -175,6 +175,7 @@ def gpu_info():
         return [f"GPU info error: {e}"] 
     mem = psutil.virtual_memory().percent
     if mem > ALERTS["memory"]:
+        alerts = []
         alerts.append(f"⚠️ Memory Usage High: {mem:.1f}%")
     
     # GPU temp (if available)
@@ -184,11 +185,13 @@ def gpu_info():
             for entry in entries:
                 if "gpu" in entry.label.lower() or "nvidia" in name.lower():
                     if entry.current > ALERTS["gpu_temp"]:
+                        alerts = []
                         alerts.append(f"⚠️ GPU Temp High: {entry.current} °C")
     
     # Battery
     bat = psutil.sensors_battery()
     if bat and not bat.power_plugged and bat.percent < ALERTS["battery_low"]:
+        alerts = []
         alerts.append(f"⚠️ Battery Low: {bat.percent:.1f}%")
 
     return alerts
