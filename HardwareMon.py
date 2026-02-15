@@ -32,6 +32,24 @@ def check_for_updates():
         return None  # No update
     except Exception:
         return None  # Fail silently
+    
+
+# Global cache for update messages
+_last_update_check = 0
+_update_msg_cache = None
+UPDATE_CHECK_INTERVAL = 600  # seconds (10 minutes)
+
+def check_for_updates_cached():
+    global _last_update_check, _update_msg_cache
+    now = time.time()
+
+    # Only check GitHub if enough time has passed
+    if now - _last_update_check > UPDATE_CHECK_INTERVAL:
+        _last_update_check = now
+        _update_msg_cache = check_for_updates()  # your existing function
+
+    return _update_msg_cache
+
 
 
 
@@ -939,7 +957,7 @@ def gui_app():
         text.delete("1.0", tk.END)
 
         alerts = check_alerts()
-        update_msg = check_for_updates()
+        update_msg = check_for_updates_cached()  # new throttled version
 
         if alerts:
             version_label.config(text=" | ".join(alerts))
