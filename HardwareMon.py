@@ -875,23 +875,16 @@ SECTIONS = [
 ]
 
 # ---------- GUI App ---------- #
-
 import tkinter as tk
 
-current_theme = "dark"
-THEMES = {
-    "dark": {"bg": "#111111", "fg": "#21b0ed", "accent": "#00aeff"},
-    "light": {"bg": "#f5f5f5", "fg": "#111111", "accent": "#FFFFFF"},
-    "hacker": {"bg": "#000000", "fg": "#00ff00", "accent": "#00cc00"},
-    "red": {"bg": "#2e0000", "fg": "#ff4d4d", "accent": "#ff1a1a"}
-}
-
 def gui_app():
+    global current_theme  # make sure we modify the global theme
+
     root = tk.Tk()
-    root.title("System Monitor")
+    root.title("HardwareMon")
     root.geometry("800x600")
 
-    summary_mode = tk.BooleanVar(value=True)  # Proper binding for summary mode
+    summary_mode = tk.BooleanVar(value=True)
 
     # Version / Alerts label
     version_label = tk.Label(
@@ -904,37 +897,46 @@ def gui_app():
     version_label.pack(anchor="ne", padx=10, pady=5)
 
     # Text widget
-    text = tk.Text(root, font=("monospace", 11),
-                   bg=THEMES[current_theme]["bg"],
-                   fg=THEMES[current_theme]["fg"],
-                   insertbackground=THEMES[current_theme]["fg"])
-    text.pack(fill="both", expand=True)
+    text = tk.Text(
+        root,
+        font=("monospace", 11),
+        bg=THEMES[current_theme]["bg"],
+        fg=THEMES[current_theme]["fg"],
+        insertbackground=THEMES[current_theme]["fg"]
+    )
+    text.pack(fill="both", expand=True, padx=5, pady=5)
 
-    # Toggle Button
-    def toggle_view():
-        summary_mode.set(not summary_mode.get())  # flip the mode
-        toggle_btn.config(text="Show Full Stats" if summary_mode.get() else "Show Summary")
-        refresh_text()  # refresh immediately
+    # Frame for toggle button and graphs
+    main_frame = tk.Frame(root, bg=THEMES[current_theme]["bg"])
+    main_frame.pack(pady=5, fill="x")
 
-    toggle_btn = tk.Button(root, text="Show Full Stats", command=toggle_view)
-    toggle_btn.pack()
+    toggle_btn = tk.Button(main_frame, text="Show Full Stats")
+    toggle_btn.pack(pady=2)
 
-    # Apply theme function
-    def apply_theme(theme_name):
+    cpu_canvas = tk.Canvas(main_frame, width=780, height=100, bg=THEMES[current_theme]["bg"])
+    cpu_canvas.pack(pady=2)
+    mem_canvas = tk.Canvas(main_frame, width=780, height=100, bg=THEMES[current_theme]["bg"])
+    mem_canvas.pack(pady=2)
+    disk_canvas = tk.Canvas(main_frame, width=780, height=100, bg=THEMES[current_theme]["bg"])
+    disk_canvas.pack(pady=2)
+
+    # ---- Functions ---- #
+
+    def apply_theme_gui(theme_name):
         theme = THEMES[theme_name]
         root.configure(bg=theme["bg"])
         text.configure(bg=theme["bg"], fg=theme["fg"], insertbackground=theme["fg"])
         version_label.configure(bg=theme["bg"], fg=theme["fg"])
         toggle_btn.configure(bg=theme["bg"], fg=theme["fg"])
+        main_frame.configure(bg=theme["bg"])
+        cpu_canvas.configure(bg=theme["bg"])
+        mem_canvas.configure(bg=theme["bg"])
+        disk_canvas.configure(bg=theme["bg"])
 
-    apply_theme(current_theme)
-
-    # Refresh text based on summary mode
     def refresh_text():
         scroll = text.yview()
         text.delete("1.0", tk.END)
 
-        # Alerts
         alerts = check_alerts()
         update_msg = check_for_updates()
 
@@ -954,13 +956,43 @@ def gui_app():
 
         text.yview_moveto(scroll[0])
 
-    # Auto-refresh every 60 seconds
+        update_history()
+        draw_graph(cpu_canvas, cpu_history, THEMES[current_theme]["accent"], "CPU")
+        draw_graph(mem_canvas, mem_history, THEMES[current_theme]["accent"], "Memory")
+        draw_graph(disk_canvas, disk_history, THEMES[current_theme]["accent"], "Disk")
+
+    def toggle_view():
+        summary_mode.set(not summary_mode.get())
+        toggle_btn.config(text="Show Full Stats" if summary_mode.get() else "Show Summary")
+        refresh_text()
+
+    toggle_btn.config(command=toggle_view)
+
+    def switch_theme(event=None):
+        global current_theme
+        theme_names = list(THEMES.keys())
+        next_index = (theme_names.index(current_theme) + 1) % len(theme_names)
+        current_theme = theme_names[next_index]
+        apply_theme_gui(current_theme)
+        refresh_text()
+
+    # Bind keys
+    root.bind("<F2>", lambda e: toggle_view())
+    root.bind("<F3>", switch_theme)
+
+    # Initial display
+    apply_theme_gui(current_theme)
+    refresh_text()
+
     def update_loop():
         refresh_text()
-        root.after(60000, update_loop)
+        root.after(1000, update_loop)
 
     update_loop()
     root.mainloop()
+
+
+
 
 
 ## -- END GUI APP -- ##
