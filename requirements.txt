@@ -1,8 +1,2 @@
 requests
 psutil
-shutil
-time
-platform
-text
-root
-os
