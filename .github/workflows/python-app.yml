@@ -28,9 +28,9 @@ jobs:
     - name: Lint with flake8
       run: |
         # ignore undefined name errors (F821), fail on other critical errors
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --ignore=F821
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # run full lint with warnings only (exit-zero), still ignoring F821
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --ignore=F821
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test HardwareMon.py with pytest
       run: |
         pytest HardwareMon.py || true
