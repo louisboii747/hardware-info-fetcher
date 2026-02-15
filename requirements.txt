@@ -1,6 +1,5 @@
 requests
 psutil
-re
 shutil
 time
 platform
