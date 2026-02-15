@@ -911,6 +911,18 @@ def gui_app():
     root.title("System Monitor")
     root.geometry("800x600")
 
+
+    # --- Version Label ---
+    version_label = tk.Label(
+        root,
+        text=f"HardwareMon v{VERSION}",  # <- this is your version number
+        font=("monospace", 12, "bold"),
+        bg=THEMES[current_theme]["bg"],
+        fg=THEMES[current_theme]["fg"]
+    )
+    version_label.pack(anchor="ne", padx=10, pady=5)
+    # --- End Version Label ---
+
     summary_mode = True  # Start in summary mode
 
     # Text widget
