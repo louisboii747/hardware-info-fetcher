@@ -1001,3 +1001,6 @@ def gui_app():
 if __name__ == "__main__":
     check_for_updates()
     gui_app()
+
+
+## Made with <3 by Louis ##
