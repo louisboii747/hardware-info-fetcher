@@ -18,16 +18,18 @@ Clone the repository or download the Python script.
 
 Run the script from a terminal:
 
+```
 python3 hardware_mon.py
-
+```
 ## Windows (PowerShell version) ##
 
 Open PowerShell.
 
 Run the script directly or use the provided .exe if available:
 
+```
 .\hardware-info.ps1
-
+```
 
 The Windows .exe was generated from the PowerShell script but is not maintained as actively as the source script. It may lack the latest bug fixes or features and is provided primarily for convenience.
 
