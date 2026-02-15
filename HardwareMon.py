@@ -1,13 +1,13 @@
 from logging import root
 import platform
-import psutil
 import os
 import time
 import shutil
 import re
 import requests
+import psutil
 
-VERSION = "1.0.0"
+VERSION = "0.0.1"
 
 MAX_POINTS = 60  # last 60 seconds
 
@@ -19,7 +19,7 @@ disk_history = []
 import requests
 
 def check_for_updates():
-    repo = "yourusername/HardwareMon"  # change this
+    repo = "louisboii747/HardwareMon" 
     url = f"https://api.github.com/repos/{repo}/releases/latest"
 
     try:
