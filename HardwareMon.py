@@ -5,7 +5,6 @@ import os
 import time
 import shutil
 import re
-from turtle import update
 import requests
 import psutil
 
@@ -990,9 +989,6 @@ def gui_app():
 
     update_loop()
     root.mainloop()
-
-
-
 
 
 ## -- END GUI APP -- ##
