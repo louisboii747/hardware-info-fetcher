@@ -877,8 +877,7 @@ SECTIONS = [
 import tkinter as tk
 
 def gui_app():
-    global current_theme  # make sure we modify the global theme
-
+    
     root = tk.Tk()
     root.title("HardwareMon")
     root.geometry("800x600")
