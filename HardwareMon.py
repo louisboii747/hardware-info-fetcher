@@ -821,7 +821,7 @@ def apply_theme(root, text, theme_name):
     text.configure(bg=theme["bg"], fg=theme["fg"], insertbackground=theme["fg"])
 
 
-# ---------- Summary Function ---------- #
+# ---------- Summary ---------- #
 def system_summary():
     lines = ["=== SYSTEM SUMMARY ==="]
 
