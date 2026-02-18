@@ -767,7 +767,7 @@ def main():
     except KeyboardInterrupt:
         print("\nExiting...")
 
-# Define your themes
+# THEMES # 
 THEMES = {
     "dark": {
         "bg": "#111111",
@@ -821,7 +821,7 @@ def apply_theme(root, text, theme_name):
     text.configure(bg=theme["bg"], fg=theme["fg"], insertbackground=theme["fg"])
 
 
-# ---------- Summary Function ----------
+# ---------- Summary Function ---------- #
 def system_summary():
     lines = ["=== SYSTEM SUMMARY ==="]
 
@@ -853,7 +853,8 @@ def system_summary():
 
     return lines
 
-
+# ---------- Full Sections Placeholder ----------
+# Replace this with your actual SECTIONS list from your app
 SECTIONS = [ 
     system_info,
     swap_memory,
@@ -886,7 +887,6 @@ def check_for_updates_cached():
     global _last_update_check, _update_msg_cache
     now = time.time()
 
-    # Only check GitHub if enough time has passed
     if now - _last_update_check > UPDATE_CHECK_INTERVAL:
         _last_update_check = now
         _update_msg_cache = check_for_updates()  # your existing function
@@ -895,16 +895,18 @@ def check_for_updates_cached():
 
 
 # ---------- GUI App ---------- #
+
+
+
 import tkinter as tk
 def gui_app():
     root = tk.Tk()
     root.title("HardwareMon")
     root.geometry("800x600")
 
-    # ---- Define variables first ----
     summary_mode = tk.BooleanVar(value=True)
 
-    # ---- Create widgets ----
+    # ---- Create widgets ---- #
     version_label = tk.Label(root, text=f"HardwareMon v{VERSION}",
                              font=("monospace", 12, "bold"))
     version_label.pack(anchor="ne", padx=10, pady=5)
@@ -925,7 +927,7 @@ def gui_app():
     disk_canvas = tk.Canvas(main_frame, width=780, height=100)
     disk_canvas.pack(pady=2)
 
-    # ---- Now define functions ----
+    # ----  define functions ---- #
     def apply_theme_gui(theme_name):
         theme = THEMES[theme_name]
         root.configure(bg=theme["bg"])
@@ -995,11 +997,13 @@ def gui_app():
 
 
 
-## -- END GUI APP -- ##
+
 
 if __name__ == "__main__":
     check_for_updates()
     gui_app()
+
+## -- END GUI APP -- ##
 
 
 ## Made with <3 by Louis ##
