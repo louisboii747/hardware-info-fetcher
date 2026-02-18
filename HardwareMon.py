@@ -853,8 +853,7 @@ def system_summary():
 
     return lines
 
-# ---------- Full Sections Placeholder ----------
-# Replace this with your actual SECTIONS list from your app
+
 SECTIONS = [ 
     system_info,
     swap_memory,
