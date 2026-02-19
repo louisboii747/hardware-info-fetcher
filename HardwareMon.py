@@ -213,11 +213,6 @@ THEMES = {
         "fg": "#e6e6e6",
         "accent": "#4fc3f7"
     },
-    "light": {
-        "bg": "#f5f5f5",
-        "fg": "#111111",
-        "accent": "#1976d2"
-    },
     "hacker": {
         "bg": "#000000",
         "fg": "#00ff00",
