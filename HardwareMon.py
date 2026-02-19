@@ -229,9 +229,9 @@ THEMES = {
         "accent": "#000000"
     },
     "blue": {
-            "bg": "#001f3f",
-            "fg": "#7FDBFF",
-            "accent": "#FFFFFF"
+        "bg": "#001f3f",
+        "fg": "#7FDBFF",
+        "accent": "#FFFFFF"
             }
     }
 
