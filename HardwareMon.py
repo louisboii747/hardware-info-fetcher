@@ -196,7 +196,16 @@ def gpu_info():
 
     return alerts
 
-
+def get_cpu_name():
+    if platform.system() == "Linux":
+        try:
+            with open("/proc/cpuinfo") as f:
+                for line in f:
+                    if "model name" in line:
+                        return line.split(":", 1)[1].strip()
+        except Exception:
+            pass
+    return platform.processor()
 
 THEMES = {
     "dark": {
@@ -218,8 +227,18 @@ THEMES = {
         "bg": "#2e0000",
         "fg": "#ff4d4d",
         "accent": "#ff1a1a"
+    },
+    "black on white": {
+        "bg": "#ffffff",
+        "fg": "#000000",
+        "accent": "#000000"
+    },
+    "blue": {
+            "bg": "#001f3f",
+            "fg": "#7FDBFF",
+            "accent": "#FFFFFF"
+            }
     }
-}
 
 
 
@@ -274,7 +293,7 @@ def clear_screen():
 def system_summary():
     lines = ["=== SYSTEM SUMMARY ==="]
 
-    cpu_name = platform.processor()
+    cpu_name = get_cpu_name()
     total_ram = round(psutil.virtual_memory().total / (1024**3), 1)
     disk_total = round(psutil.disk_usage('/').total / (1024**3), 1)
 
@@ -320,7 +339,7 @@ def system_info():
         info = [
             f"OS/Kernel Version: {platform.system()} {platform.release()}",
             f"Architecture: {platform.machine()}",
-            f"CPU: {platform.processor()}",
+            f"CPU: {get_cpu_name()}",
             f"CPU Frequency: {psutil.cpu_freq().current:.2f} MHz",
             f"CPU Cores: {psutil.cpu_count(logical=False)}",
             f"Threads: {psutil.cpu_count(logical=True)}",
@@ -767,29 +786,7 @@ def main():
     except KeyboardInterrupt:
         print("\nExiting...")
 
-# THEMES # 
-THEMES = {
-    "dark": {
-        "bg": "#111111",
-        "fg": "#21b0ed",
-        "accent": "#00aeff"
-    },
-    "light": {
-        "bg": "#f5f5f5",
-        "fg": "#111111",
-        "accent": "#000000"
-    },
-    "hacker": {
-        "bg": "#000000",
-        "fg": "#00ff00",
-        "accent": "#00cc00"
-    },
-    "red": {
-        "bg": "#2e0000",
-        "fg": "#ff4d4d",
-        "accent": "#ff1a1a"
-    }
-}
+
 current_theme = "dark"
 
 # List of all section functions
@@ -825,7 +822,7 @@ def apply_theme(root, text, theme_name):
 def system_summary():
     lines = ["=== SYSTEM SUMMARY ==="]
 
-    cpu_name = platform.processor()
+    cpu_name = get_cpu_name()
     total_ram = round(psutil.virtual_memory().total / (1024**3), 1)
     disk_total = round(psutil.disk_usage('/').total / (1024**3), 1)
 
