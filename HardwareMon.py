@@ -232,8 +232,14 @@ THEMES = {
         "bg": "#001f3f",
         "fg": "#7FDBFF",
         "accent": "#FFFFFF"
-            }
+    },
+    "purple": {
+        "bg": "#2e003e",
+        "fg": "#ff66ff",
+        "accent": "#ff1aff"
     }
+}
+
 
 
 
