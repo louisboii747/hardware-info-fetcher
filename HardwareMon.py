@@ -322,7 +322,7 @@ def system_summary():
 
     return lines
 
-# ---------- Full Sections Placeholder ----------
+# ---------- Full Sections ---------- #
 
 SECTIONS = [
     system_summary
