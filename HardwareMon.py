@@ -410,6 +410,7 @@ def gpu_info():
         cmd = (
             "lspci | grep -Ei "
             "'(NVIDIA Corporation|Advanced Micro Devices, Inc.)' | "
+            "'(VGA|3D)' | "
             "grep -E '(VGA|3D)' | "
             "grep -vi 'APU'"
         )
