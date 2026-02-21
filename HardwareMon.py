@@ -411,6 +411,7 @@ def gpu_info():
             "lspci | grep -Ei "
             "'(NVIDIA Corporation|Advanced Micro Devices, Inc.)' | "
             "'(VGA|3D)' | "
+            "'(APU)' -vi"
             "grep -E '(VGA|3D)' | "
             "grep -vi 'APU'"
         )
