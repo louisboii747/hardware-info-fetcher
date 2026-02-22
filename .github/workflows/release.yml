@@ -1,0 +1,36 @@
+name: Release HardwareMon
+
+on:
+  push:
+    branches:
+      - main  # or your dev branch
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install setuptools wheel twine bump2version
+
+      - name: Bump version
+        run: |
+          bump2version patch  # automatically increments 2.0.0 → 2.0.1
+          git push --follow-tags origin main
+
+      - name: Build package
+        run: python setup.py sdist bdist_wheel
+
+      - name: Publish to PyPI
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: twine upload dist/*
