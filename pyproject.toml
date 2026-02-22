@@ -5,19 +5,15 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "hardwaremon"
 version = "2.0.0"
-description = "A Python hardware monitoring tool"
+description = "Hardware monitoring tool for CPU, RAM, and battery."
 readme = "README.md"
-authors = [
-    { name="Louis", email="your.email@example.com" }
-]
-license = { file="LICENSE" }
+authors = [{name="Louis Hinchliffe", email="your.email@example.com"}]
+license = {file="LICENSE"}
 requires-python = ">=3.10"
 dependencies = [
     "psutil",
     "requests",
 ]
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-]
+
+[project.scripts]
+hardwaremon = "hardwaremon.HardwareMon:main"  # if you have a main() function
