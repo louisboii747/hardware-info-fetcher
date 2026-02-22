@@ -39,6 +39,10 @@ The Windows version relies on CIM/WMI queries and may have limitations on certai
 
 While the project can run as a standalone script or executable, it is recommended to use the scripts directly to ensure maximum compatibility and access to the latest updates.
 
+The .sh script is also much more basic compared to the .py script on linux, since the .py script relies on Tkinter for graph drawings which Bash cannot use, and has not had as much attention compared to the .py version.
+
+The .yml script only runs on the .py script.
+
 # Contribution #
 
 Contributions and suggestions are welcome. Please feel free to fork the repository and submit pull requests or report issues on the project’s issue tracker.
