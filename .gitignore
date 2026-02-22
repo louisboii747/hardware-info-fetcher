@@ -3,3 +3,12 @@ pycache/
 *.pyc
 .env
 .vscode/
+.DS_Store
+Thumbs.db
+build/
+dist/
+*.egg-info/
+*.egg
+__pycache__/
+*.py[cod]
+*$py.class
