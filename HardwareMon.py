@@ -9,13 +9,7 @@ import requests
 import psutil
 import tkinter.messagebox as messagebox
 
-##test comment##
-
-##test comment 2##
-
-##test comment 3##
-
-VERSION = "2.0.4"
+VERSION = "2.0.0"#
 
 MAX_POINTS = 60  # last 60 seconds
 
