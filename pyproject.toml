@@ -1,0 +1,14 @@
+[project]
+name = "hardwaremon"
+version = "2.0.0"
+description = "Hardware monitoring tool for Windows and Linux"
+readme = "README.md"
+requires-python = ">=3.9"
+
+dependencies = [
+    "psutil",
+    "requests"
+]
+
+[project.scripts]
+hardwaremon = "hardwaremon.main:gui_app"
