@@ -1,14 +1,25 @@
 from setuptools import setup, find_packages
 
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+
 setup(
-    name="HardwareMon",
-    version="2.3.0",   # increment with each release
+    name="hardwaremon",
+    version="2.4.0",
     packages=find_packages(),
     install_requires=[
         "psutil",
-        "requests"
+        "requests",
+        # etc
     ],
     author="Louis",
-    description="A hardware monitoring script",
+    description="Hardware monitoring tool for Linux",
+    long_description=long_description,      # <- THIS
+    long_description_content_type="text/markdown",  # <- VERY IMPORTANT
     url="https://github.com/louisboii747/HardwareMon",
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "Operating System :: OS Independent",
+    ],
+    python_requires='>=3.8',
 )
