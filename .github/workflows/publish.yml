@@ -1,37 +1,38 @@
 name: Publish Python Package
 
+# Trigger workflow only on new version tags like v2.0.3
 on:
   push:
     tags:
-      - "v*"  # Trigger only on tags like v2.0.1
+      - "v*"  
 
 jobs:
   publish:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the repo
+      # Step 1: Check out the code
       - uses: actions/checkout@v3
 
-      # 2. Set up Python
+      # Step 2: Set up Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.x'  # latest 3.x
 
-      # 3. Install build tools
-      - name: Install build tools
+      # Step 3: Upgrade pip and install build tools
+      - name: Install build and twine
         run: |
           python -m pip install --upgrade pip
-          pip install build twine
+          pip install --upgrade build twine
 
-      # 4. Build the package
+      # Step 4: Build the package
       - name: Build package
         run: python -m build
 
-      # 5. Publish to PyPI
+      # Step 5: Publish package to PyPI using API token
       - name: Publish to PyPI
         env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}  # This must be a PyPI API token
+          TWINE_USERNAME: __token__                  # literal __token__ for API tokens
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}  # your full pypi-XXXX token
         run: python -m twine upload dist/*

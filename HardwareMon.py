@@ -13,7 +13,9 @@ import tkinter.messagebox as messagebox
 
 ##test comment 2##
 
-VERSION = "2.0.3"
+##test comment 3##
+
+VERSION = "2.0.4"
 
 MAX_POINTS = 60  # last 60 seconds
 
