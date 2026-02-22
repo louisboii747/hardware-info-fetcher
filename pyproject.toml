@@ -1,14 +1,23 @@
+[build-system]
+requires = ["setuptools>=65.5.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "hardwaremon"
 version = "2.0.0"
-description = "Hardware monitoring tool for Windows and Linux"
+description = "A Python hardware monitoring tool"
 readme = "README.md"
-requires-python = ">=3.9"
-
+authors = [
+    { name="Louis", email="your.email@example.com" }
+]
+license = { file="LICENSE" }
+requires-python = ">=3.10"
 dependencies = [
     "psutil",
-    "requests"
+    "requests",
 ]
-
-[project.scripts]
-hardwaremon = "hardwaremon.main:gui_app"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
