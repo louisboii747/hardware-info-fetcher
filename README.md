@@ -21,6 +21,14 @@ Run the script from a terminal:
 ```
 python3 hardware_mon.py
 ```
+
+Recently,I have now made the Linux Python Script a pip package. This makes it even easier to install, with the command being
+
+```
+pip install hardwaremon
+```
+
+I have still kept the instructions of Git cloning, as it is a much mire reliable method, since I just finished the setup of the pip version.
 ## Windows (PowerShell version) ##
 
 Open PowerShell.
