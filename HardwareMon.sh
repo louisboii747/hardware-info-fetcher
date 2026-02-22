@@ -22,12 +22,18 @@ clear
 }
 
 cpu_percent() {
-top -bn1 | awk '/Cpu/ {print 100-$8}'
+
+awk -v RS="" '
+{usage=($2+$4)*100/($2+$4+$5)}
+END {printf "%d", usage}
+' /proc/stat
+
 }
 
 mem_percent() {
-free | awk '/Mem:/ {print $3/$2 *100}'
+free | awk '/Mem:/ {printf "%d", $3/$2 *100}'
 }
+
 
 disk_percent() {
 df / | awk 'NR==2 {print $5}' | tr -d %
