@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="HardwareMon",
-    version="2.0.0",   # increment with each release
+    version="2.0.1",   # increment with each release
     packages=find_packages(),
     install_requires=[
         "psutil",
