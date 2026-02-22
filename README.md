@@ -22,7 +22,7 @@ Run the script from a terminal:
 python3 hardware_mon.py
 ```
 
-Recently,I have now made the Linux Python Script a pip package. This makes it even easier to install, with the command being
+Recently, I have now made the Linux Python Script a pip package. This makes it even easier to install, with the command being:
 
 ```
 pip install hardwaremon
