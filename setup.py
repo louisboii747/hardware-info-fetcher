@@ -5,16 +5,15 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="hardwaremon",
-    version="2.5.4",
+    version="2.5.5",
     packages=find_packages(),
     install_requires=[
         "psutil",
         "requests",
-        # other deps
     ],
     entry_points={
         "console_scripts": [
-            "hardwaremon=hardwaremon.main:main"
+            "hardwaremon=hardwaremon.HardwareMon:main"
         ]
     },
     author="Louis",
@@ -26,5 +25,5 @@ setup(
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.8',
+    python_requires=">=3.8",
 )
