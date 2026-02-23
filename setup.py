@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="hardwaremon",
-    version="3.0.1",
+    version="v3.0.2",
     packages=find_packages(),
     include_package_data=True,
     install_requires=[

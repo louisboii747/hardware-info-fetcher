@@ -6,7 +6,7 @@ import platform
 import subprocess
 from PIL import Image, ImageTk, ImageOps
 
-VERSION = "v3.0.1"
+VERSION = "v3.0.2"
 
 #########################
 # ICON FILES (put in ./icons/)
