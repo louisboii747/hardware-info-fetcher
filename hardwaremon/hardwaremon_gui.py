@@ -1,4 +1,5 @@
 
+import importlib
 import tkinter as tk
 from tkinter import ttk
 import psutil
@@ -8,18 +9,18 @@ from PIL import Image, ImageTk, ImageOps
 import os
 import pkgutil
 
-VERSION = "v3.0.4"
+VERSION = "v3.0.5"
 
 #########################
-# ICON FILES (put in ./icons/)
+# ICONS
 #########################
 ICON_FILES = {
-    "CPU": "icons/cpu.png",
-    "RAM": "icons/ram.png",
-    "DISK": "icons/disk.png",
-    "GPU": "icons/gpu.png",
-    "BOARD": "icons/board.png",
-    "OS": "icons/os.png"
+    "CPU": "cpu.png",
+    "RAM": "ram.png",
+    "DISK": "disk.png",
+    "GPU": "gpu.png",
+    "BOARD": "board.png",
+    "OS": "os.png"
 }
 
 ICON_SIZE = (32, 32)
@@ -41,16 +42,17 @@ theme_names = list(THEMES.keys())
 # ICON LOADER
 #########################
 
+
 def load_icon(name):
-    # load from package resources
-    data = pkgutil.get_data("hardwaremon", f"icons/{name}")  # hardwaremon/icons/...
-    if not data:
-        print(f"Icon {name} not found")
+    try:
+        # this loads the icon from inside the hardwaremon package
+        with importlib.resources.open_binary("hardwaremon.icons", name) as f:
+            img = Image.open(f).convert("RGBA")
+            img = img.resize((32, 32), Image.Resampling.LANCZOS)
+            return ImageTk.PhotoImage(img)
+    except Exception as e:
+        print(f"Error loading icon {name}: {e}")
         return None
-    from io import BytesIO
-    img = Image.open(BytesIO(data)).convert("RGBA")
-    img = img.resize((32,32), Image.Resampling.LANCZOS)
-    return ImageTk.PhotoImage(img)
 
 #########################
 # HARDWARE FUNCTIONS
