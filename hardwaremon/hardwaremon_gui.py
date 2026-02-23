@@ -8,7 +8,7 @@ from PIL import Image, ImageTk, ImageOps
 import os
 import pkgutil
 
-VERSION = "v3.0.4"
+VERSION = "v3.0.6"
 
 #########################
 # ICON FILES (put in ./icons/)
