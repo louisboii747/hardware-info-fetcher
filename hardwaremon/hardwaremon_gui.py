@@ -5,8 +5,10 @@ import psutil
 import platform
 import subprocess
 from PIL import Image, ImageTk, ImageOps
+import os
+import pkgutil
 
-VERSION = "v3.0.3"
+VERSION = "v3.0.4"
 
 #########################
 # ICON FILES (put in ./icons/)
@@ -39,14 +41,16 @@ theme_names = list(THEMES.keys())
 # ICON LOADER
 #########################
 
-def load_icon(path):
-    try:
-        img = Image.open(path).convert("RGBA")
-        img = img.resize((32, 32), Image.Resampling.LANCZOS)
-        return ImageTk.PhotoImage(img)
-    except Exception as e:
-        print(f"Error loading icon {path}: {e}")
+def load_icon(name):
+    # load from package resources
+    data = pkgutil.get_data("hardwaremon", f"icons/{name}")  # hardwaremon/icons/...
+    if not data:
+        print(f"Icon {name} not found")
         return None
+    from io import BytesIO
+    img = Image.open(BytesIO(data)).convert("RGBA")
+    img = img.resize((32,32), Image.Resampling.LANCZOS)
+    return ImageTk.PhotoImage(img)
 
 #########################
 # HARDWARE FUNCTIONS

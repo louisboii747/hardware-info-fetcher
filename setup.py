@@ -5,9 +5,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="hardwaremon",
-    version="v3.0.3",
+    version="v3.0.4",
     packages=find_packages(),
-    include_package_data=True,
     install_requires=[
         "psutil",
         "requests",
@@ -29,4 +28,8 @@ setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.8',
+    package_data={
+        "hardwaremon": ["icons/*"]
+    },
+    include_package_data=True,
 )
