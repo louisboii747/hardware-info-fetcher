@@ -9,8 +9,11 @@ HardwareMon gathers and presents information such as CPU usage, memory usage, di
 
 The Linux version also includes a GUI mode built with Tkinter, offering a modern and configurable interface with light, dark, and hacker-style themes. To cycle themes, press F2. Graphs for CPU, memory, and disk usage are updated in real time, providing a quick visual snapshot of system performance.
 
-## Installation ##
-Linux (Python version)
+## Installation (Linux version) ##
+
+
+## Using Git ##
+
 
 Ensure Python 3 and the psutil library are installed.
 
