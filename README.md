@@ -28,6 +28,89 @@ Recently, I have now made the Linux Python Script a pip package. This makes it e
 pip install hardwaremon
 ```
 
+## Fixing the “Externally Managed Environment” Error ##
+
+On some Linux distributions (especially Ubuntu and Debian-based systems), you may see an error like this when running:
+
+```
+pip install hardwaremon
+```
+
+Example:
+
+```
+error: externally-managed-environment
+```
+
+This happens because modern Linux systems protect the system Python installation to prevent accidental damage. Fortunately, there are several easy ways to work around this.
+
+Recommended Method (Best Option): Use pipx
+
+pipx installs applications in isolated environments and is the safest way to install HardwareMon.
+
+Install pipx:
+
+```
+sudo apt install pipx
+pipx ensurepath
+```
+
+
+Then install HardwareMon:
+
+```
+pipx install hardwaremon
+```
+
+Run it with:
+
+```
+hardwaremon
+```
+
+This method avoids conflicts with your system Python and is strongly recommended.
+
+## Option 2: Use a Virtual Environment ##
+
+You can install HardwareMon inside a Python virtual environment:
+
+```
+python3 -m venv hardwaremon-env
+source hardwaremon-env/bin/activate
+pip install hardwaremon
+```
+
+Run with:
+
+```
+hardwaremon
+```
+
+Deactivate later with:
+
+```
+deactivate
+```
+
+## Option 3: Force Installation (Not Recommended) ##
+
+You can override the restriction with:
+
+```
+pip install hardwaremon –break-system-packages
+```
+
+This installs directly into the system Python.
+
+## Warning: This can potentially break system tools that depend on Python. Only use this if you understand the risks. ##
+
+## Summary ##
+
+If you’re unsure which method to use:
+
+Use pipx — it’s the safest and easiest option.
+
+
 I have still kept the instructions of Git cloning, as it is a much mire reliable method, since I just finished the setup of the pip version.
 ## Windows (PowerShell version) ##
 
