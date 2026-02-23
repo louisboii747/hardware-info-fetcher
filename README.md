@@ -22,6 +22,8 @@ Run the script from a terminal:
 python3 hardware_mon.py
 ```
 
+## Using Pip (Easier, Quicker) ##
+
 Recently, I have now made the Linux Python Script a pip package. This makes it even easier to install, with the command being:
 
 ```
@@ -111,7 +113,9 @@ If you’re unsure which method to use:
 Use pipx — it’s the safest and easiest option.
 
 
-I have still kept the instructions of Git cloning, as it is a much mire reliable method, since I just finished the setup of the pip version.
+I have still kept the instructions of Git cloning, if you prefer to install the script that way.
+
+
 ## Windows (PowerShell version) ##
 
 Open PowerShell.
