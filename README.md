@@ -109,8 +109,6 @@ This installs directly into the system Python.
 
 ## Warning: This can potentially break system tools that depend on Python. Only use this if you understand the risks. ##
 
-## Summary ##
-
 If you’re unsure which method to use:
 
 Use pipx — it’s the safest and easiest option.
