@@ -9,7 +9,7 @@ import requests
 import psutil
 import tkinter.messagebox as messagebox
 
-VERSION = "2.5.0"  # increment with each release
+VERSION = "2.5.1"  # increment with each release
 
 
 MAX_POINTS = 60  # last 60 seconds
@@ -998,10 +998,11 @@ def gui_app():
 
 
 
-
-if __name__ == "__main__":
+def main():
     check_for_updates()
     gui_app()
+if __name__ == "__main__":
+    main()
 
 ## -- END GUI APP -- ##
 
