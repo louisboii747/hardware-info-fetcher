@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="hardwaremon",
-    version="2.5.2",
+    version="2.5.3",
     packages=find_packages(),
     install_requires=[
         "psutil",
