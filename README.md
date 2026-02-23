@@ -32,6 +32,23 @@ Recently, I have now made the Linux Python Script a pip package. This makes it e
 ```
 pip install hardwaremon
 ```
+## GUI vs CLI Versions
+
+Recently, I created a revamped version of HardwareMon, that seperates core hardware data into seperate pages, with icons to differentiate between them. It is recommended if you prefer a cleaner look, which supports themes and usage graphs. Now, when installing HardwareMon through Pip, you can launch the GUI by simply typing:
+
+```
+hardwaremon
+```
+
+But, if you prefer to check the CLI release out, that can be ran with:
+
+```
+hardwaremon_cli
+```
+
+The CLI version will still recieve updates, but not as heavily as the revamped HardwareMon, which im calling the GUI version, spending more time with it.
+
+ 
 
 ## Fixing the “Externally Managed Environment” Error ##
 
