@@ -1,4 +1,4 @@
-from HardwareMon import check_alerts
+from hardwaremon.HardwareMon import check_alerts
 
 def test_alerts_returns_list():
     result = check_alerts()
