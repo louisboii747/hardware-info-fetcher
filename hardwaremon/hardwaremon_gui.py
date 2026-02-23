@@ -131,7 +131,6 @@ SECTIONS = {
 # GUI
 #########################
 def gui():
-    global current_theme
     root = tk.Tk()
     root.title(f"HardwareMon {VERSION}")
     root.geometry("900x600")

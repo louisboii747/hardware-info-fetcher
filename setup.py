@@ -5,15 +5,18 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="hardwaremon",
-    version="2.5.5",
+    version="2.6.0",
     packages=find_packages(),
+    include_package_data=True,
     install_requires=[
         "psutil",
         "requests",
+        "Pillow",
     ],
     entry_points={
         "console_scripts": [
-            "hardwaremon=hardwaremon.HardwareMon:main"
+            "hardwaremon=hardwaremon.hardwaremon_gui:gui",   # GUI
+            "hardwaremon_cli=hardwaremon.hardwaremon:main"   # CLI
         ]
     },
     author="Louis",
@@ -25,5 +28,5 @@ setup(
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
     ],
-    python_requires=">=3.8",
+    python_requires='>=3.8',
 )
