@@ -54,7 +54,7 @@ pip --version
 
 
 
-Then, install hardwaremon:
+### Then, install hardwaremon: ###
 
 ```
 pip install hardwaremon
