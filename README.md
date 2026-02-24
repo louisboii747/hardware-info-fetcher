@@ -29,7 +29,34 @@ python3 hardware_mon.py
 
 Recently, I have now made the Linux Python Script a pip package. This makes it even easier to install, with the command being:
 
+First, install Pip.
+
 ```
+Ubuntu/Debian
+
+sudo apt update
+sudo apt install python3-pip 
+pip3 --version
+```
+
+```
+RHEL/Fedora
+
+sudo dnf install python3-pip
+pip3 --version
+```
+
+```
+Arch Linux
+
+sudo pacman -S python-pip
+pip --version
+```
+
+Then, install hardwaremon:
+
+```
+
 pip install hardwaremon
 ```
 
