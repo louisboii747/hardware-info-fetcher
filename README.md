@@ -51,6 +51,9 @@ pip --version
 
 
 
+
+
+
 Then, install hardwaremon:
 
 ```
