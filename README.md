@@ -49,6 +49,8 @@ sudo pacman -S python-pip
 pip --version
 ```
 
+
+
 Then, install hardwaremon:
 
 ```
