@@ -9,7 +9,7 @@ import requests
 import psutil
 import tkinter.messagebox as messagebox
 
-VERSION = "v3.0.7"  # increment with each release
+VERSION = "v3.0.8"  # increment with each release
 
 
 MAX_POINTS = 60  # last 60 seconds

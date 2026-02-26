@@ -35,17 +35,23 @@ Ubuntu/Debian
 ```
 sudo apt update
 sudo apt install python3-pip 
+sudo apt install python3-tk (you only need this step if you recieve an error about tkinter missing)
+sudo apt install pipx
 pip3 --version
 ```
 RHEL/Fedora
 ```
 sudo dnf install python3-pip
+sudo dnf install pipx
+sudo dnf install python3-tk (again, not ALWAYS required, see above)
 pip3 --version
 ```
 
 Arch Linux
 ```
 sudo pacman -S python-pip
+sudo pacman -S pipx
+sudo pacman -S python3-tk (again, not needed)
 pip --version
 ```
 
