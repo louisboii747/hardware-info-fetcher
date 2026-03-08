@@ -8,10 +8,8 @@ from PIL import Image, ImageTk, ImageOps
 import os
 import pkgutil
 
-VERSION = "v3.0.8"
+VERSION = "v3.0.9"
 
-#########################
-# ICON FILES (put in ./icons/)
 #########################
 ICON_FILES = {
     "CPU": "cpu.png",
@@ -44,7 +42,6 @@ import importlib.resources
 
 def load_icon(name):
     try:
-        # open icon from the hardwaremon.icons package
         with importlib.resources.open_binary("hardwaremon.icons", name) as f:
             img = Image.open(f).convert("RGBA")
             img = img.resize((32, 32), Image.Resampling.LANCZOS)
